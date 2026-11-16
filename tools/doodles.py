@@ -697,3 +697,57 @@ def cat(x, y, s=1.0, color="#f3a95e"):
                       '<circle cx="-24" cy="-95" r="8" style="fill:#111"/><circle cx="24" cy="-95" r="8" style="fill:#111"/>'
                       '<path class="ln" style="stroke-width:5" d="M-12 -70 q12 10 24 0 M-80 -80 h40 M40 -80 h40"/>'
                       f'<path class="ln" style="stroke:{color};stroke-width:22" d="M80 130 q90 -20 60 -110"/>')
+
+
+# ---------- сон ----------
+def bed(x, y, s=1.0, color="#4fa3f7"):
+    return g(x, y, s, '<path class="ln" style="stroke-width:10" d="M-260 -120 V120 M260 -20 V120"/>'
+                      f'<rect class="ln" x="-260" y="-20" width="520" height="90" rx="14" style="fill:{color}"/>'
+                      '<rect class="ln" x="-240" y="-70" width="150" height="60" rx="26" style="fill:#fff"/>'
+                      f'<path class="ln" style="fill:{color}" d="M-80 -20 q160 -60 340 0 v30 h-340z"/>')
+
+
+def moon(x, y, r=80, color="#ffd23f"):
+    return f'<path class="ln" style="fill:{color}" d="M{x} {y - r} a{r} {r} 0 1 0 {r * 0.9} {r * 1.45} a{r * 0.8} {r * 0.8} 0 1 1 {-r * 0.9} {-r * 1.45}z"/>'
+
+
+def zzz(x, y, s=1.0, cls="hand blue"):
+    return (hand("z", x, y, 70 * s, cls, -10) + hand("z", x + 45 * s, y - 55 * s, 95 * s, cls, -10)
+            + hand("Z", x + 105 * s, y - 130 * s, 125 * s, cls, -10))
+
+
+def tired_eye(x, y, s=1.0, open_=0.3):
+    h = 60 * open_
+    return g(x, y, s, f'<path class="ln" style="fill:#fff" d="M-120 0 q120 {-2 * h - 10} 240 0 q-120 {2 * h + 10} -240 0z"/>'
+                      f'<circle cx="0" cy="0" r="{max(8, h * 0.9)}" style="fill:#4fa3f7"/><circle cx="0" cy="0" r="{max(4, h * 0.45)}" style="fill:#111"/>'
+                      '<path class="ln" style="fill:#c9b8e8" d="M-125 0 q125 -95 250 0 q-125 -40 -250 0z"/>'
+                      '<path class="ln" style="stroke:#e0457b;stroke-width:4" d="M-90 35 q15 -10 25 -2 M70 30 q15 -8 22 4"/>')
+
+
+def glass(x, y, s=1.0, fill="#ffb347"):
+    return g(x, y, s, f'<path style="fill:{fill};opacity:.85" d="M-62 -40 h124 l-14 150 h-96z"/>'
+                      '<path class="ln" d="M-75 -120 h150 l-20 240 h-110z"/>'
+                      '<path class="ln" style="fill:#fff;stroke-width:5" d="M-62 -40 q30 -25 62 0 q30 -25 62 0"/>')
+
+
+def car(x, y, s=1.0, color="#e63946"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M-220 40 v-60 q0 -20 20 -25 l60 -10 l50 -70 h170 l60 70 l60 10 q20 5 20 25 v60z"/>'
+                      '<path class="ln" style="fill:#cfe8ff" d="M-80 -60 l40 -55 h70 v55z M50 -60 v-55 h50 l45 55z"/>'
+                      '<circle class="ln" cx="-130" cy="45" r="42" style="fill:#333"/><circle class="ln" cx="140" cy="45" r="42" style="fill:#333"/>')
+
+
+def mouse(x, y, s=1.0, color="#c9c2b8", face="o"):
+    eyes = ('<path class="ln" style="stroke-width:5" d="M60 -40 q8 6 16 0"/>' if face == "sleep"
+            else '<circle cx="68" cy="-40" r="7" style="fill:#111"/>')
+    return g(x, y, s, f'<path class="ln" style="stroke:{color};stroke-width:9" d="M-110 20 q-80 10 -90 -60"/>'
+                      f'<ellipse class="ln" cx="-10" cy="0" rx="110" ry="65" style="fill:{color}"/>'
+                      f'<path class="ln" style="fill:{color}" d="M60 -60 q60 20 60 60 q-40 20 -70 0z"/>'
+                      f'<circle class="ln" cx="40" cy="-70" r="32" style="fill:#ffb3c7"/>' + eyes
+                      + '<circle cx="118" cy="0" r="8" style="fill:#e0457b"/>')
+
+
+def drops(x, y, s=1.0, n=7, color="#4fa3f7"):
+    import random
+    r = random.Random(3)
+    return "".join(g(x + r.uniform(-200, 200) * s, y + r.uniform(-150, 150) * s, 0.5 * s,
+                     f'<path class="ln" style="fill:{color};stroke-width:5" d="M0 -40 q35 45 0 70 q-35 -25 0 -70z"/>') for _ in range(n))
