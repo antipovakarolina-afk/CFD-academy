@@ -521,3 +521,65 @@ def balance(x, y, s=1.0, left="", right=""):
     return g(x, y, s, '<path class="ln" d="M0 -150 V150 M-120 150 h240 M-260 -120 H260" style="stroke-width:10"/>'
                       '<path class="ln" d="M-220 -120 l-60 120 h120 z M220 -120 l-60 120 h120 z" style="fill:#fff;stroke-width:6"/>'
                       + left + right)
+
+
+# ---------- свет и электричество ----------
+def skyline(x=500, y=700, s=1.0, lit=True, seed=1):
+    import random
+    rnd = random.Random(seed)
+    out, bx = "", -420
+    for w, h in [(140, 360), (110, 250), (160, 470), (120, 300), (150, 410), (110, 230), (130, 340)]:
+        out += f'<rect class="ln" x="{bx}" y="{-h}" width="{w}" height="{h}" style="fill:#2b2f45;stroke-width:5"/>'
+        for wy in range(-h + 30, -30, 55):
+            for wx in range(bx + 20, bx + w - 30, 40):
+                on = lit and rnd.random() > 0.25
+                out += f'<rect x="{wx}" y="{wy}" width="20" height="28" style="fill:{"#ffd23f" if on else "#3b4060"}"/>'
+        bx += w
+    return g(x, y, s, out)
+
+
+def curtains(x=500, y=560, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#c0283d" d="M-380 -380 h340 q-60 200 -20 760 h-320z"/>'
+                      '<path class="ln" style="fill:#c0283d" d="M380 -380 h-340 q60 200 20 760 h320z"/>'
+                      '<rect class="ln" x="-400" y="-420" width="800" height="60" style="fill:#8a1c2c"/>'
+                      '<rect class="ln" x="-400" y="380" width="800" height="40" style="fill:#5a3a2a"/>')
+
+
+def powerline(x=500, y=600, s=1.0, tree=False, spark=False):
+    out = ('<path class="ln" style="stroke-width:10" d="M-300 300 L-260 -250 L-220 300 M-330 -200 h140 M-300 -130 h80"/>'
+           '<path class="ln" style="stroke-width:10" d="M300 300 L260 -250 L220 300 M330 -200 h-140 M300 -130 h-80"/>'
+           '<path class="ln" style="stroke-width:5" d="M-320 -200 Q0 -120 320 -200 M-180 -200 Q0 -110 180 -200"/>')
+    if tree:
+        out += ('<rect class="ln" x="-20" y="0" width="40" height="300" style="fill:#8a5a3b"/>'
+                '<circle class="ln" cx="0" cy="-60" r="110" style="fill:#2e9d5b"/><circle class="ln" cx="-60" cy="-20" r="70" style="fill:#25894f"/>')
+    if spark:
+        out += '<path class="ln" style="fill:#ffd23f;stroke:#f08a00" d="M0 -190 l25 45 l-15 0 l25 45 l-55 -55 l20 0 z"/>'
+    return g(x, y, s, out)
+
+
+def wave(x=500, y=500, s=1.0, color="#4fa3f7", bad=False):
+    import math
+    pts = " ".join(f"{-300 + i * 10},{(math.sin(i * 0.35) * (40 + (i * 2.2 if bad else 0))):.0f}" for i in range(61))
+    return g(x, y, s, f'<polyline class="ln" points="{pts}" style="stroke:{color};stroke-width:10"/>')
+
+
+def flashlight(x, y, s=1.0, r=-20):
+    return g(x, y, s, f'<g transform="rotate({r})"><rect class="ln" x="-40" y="-20" width="80" height="200" rx="14" style="fill:#4fa3f7"/>'
+                      '<path class="ln" style="fill:#c9ced6" d="M-60 -90 h120 l-20 70 h-80z"/>'
+                      '<path style="fill:#ffe98a;opacity:.7" d="M-55 -95 L-200 -380 H200 L55 -95z"/></g>')
+
+
+def powerbank(x, y, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="-70" y="-120" width="140" height="240" rx="22" style="fill:#2b2d33"/>'
+                      '<rect x="-40" y="60" width="80" height="20" rx="6" style="fill:#1f9d55"/>'
+                      '<path class="ln" style="fill:#ffd23f;stroke:#ffd23f" d="M5 -70 l-35 60 h28 l-10 50 l40 -65 h-28 z"/>')
+
+
+def bottle(x, y, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="-22" y="-150" width="44" height="40" rx="6" style="fill:#4fa3f7"/>'
+                      '<path class="ln" style="fill:#d9efff" d="M-22 -110 q-40 30 -40 80 v170 q0 20 20 20 h84 q20 0 20 -20 v-170 q0 -50 -40 -80z"/>'
+                      '<path style="fill:#9cd2ff" d="M-58 20 h116 v120 q0 18 -18 18 h-80 q-18 0 -18 -18z"/>')
+
+
+def candle_x(x, y, s=1.0):
+    return candle(x, y, s) + check(x, y + 20 * s, 2.0 * s, ok=False)
