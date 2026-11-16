@@ -583,3 +583,49 @@ def bottle(x, y, s=1.0):
 
 def candle_x(x, y, s=1.0):
     return candle(x, y, s) + check(x, y + 20 * s, 2.0 * s, ok=False)
+
+
+# ---------- Рождество (рисованные) ----------
+def cal_page(x, y, s=1.0, month="DEC", day="25", color="#e63946"):
+    return g(x, y, s, f'<rect class="ln" x="-150" y="-170" width="300" height="320" rx="24" style="fill:#fff"/>'
+                      f'<path class="ln" style="fill:{color}" d="M-150 -100 v-46 q0 -24 24 -24 h252 q24 0 24 24 v46z"/>'
+                      '<path class="ln" d="M-80 -195 v50 M80 -195 v50"/>') + \
+        hand(month, x, y - 118 * s, 60 * s, "hand") .replace('class="hand"', 'class="hand" style="fill:#fff"') + \
+        hand(day, x, y + 90 * s, 190 * s, "hand")
+
+
+def open_book(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#fff6e0" d="M0 -110 q-110 -40 -220 0 v250 q110 -40 220 0z"/>'
+                      '<path class="ln" style="fill:#fff6e0" d="M0 -110 q110 -40 220 0 v250 q-110 -40 -220 0z"/>'
+                      '<path class="ln" style="stroke:#c9b48a;stroke-width:5" d="M-180 -60 q80 -25 150 0 M-180 -10 q80 -25 150 0 M30 -60 q80 -25 150 0 M30 -10 q80 -25 150 0"/>')
+
+
+def santa_hat(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#e63946" d="M-150 60 Q-60 -200 120 -150 Q60 -100 90 60 Z"/>'
+                      '<rect class="ln" x="-180" y="40" width="300" height="70" rx="35" style="fill:#fff"/>'
+                      '<circle class="ln" cx="135" cy="-150" r="34" style="fill:#fff"/>')
+
+
+def soda(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#c0283d" d="M-25 -200 h50 v60 q45 40 45 100 q-20 50 0 100 q0 70 -20 130 h-100 q-20 -60 -20 -130 q20 -50 0 -100 q0 -60 45 -100z"/>'
+                      '<rect class="ln" x="-28" y="-225" width="56" height="28" rx="6" style="fill:#d9d9d9"/>'
+                      '<path class="ln" style="stroke:#fff;stroke-width:8" d="M-55 0 q55 -25 110 0"/>')
+
+
+def rocket(x, y, s=1.0, r=-30):
+    return g(x, y, s, f'<g transform="rotate({r})">'
+                      '<path class="ln" style="fill:#ffb347" d="M-40 50 q40 170 80 0z"/>'
+                      '<path class="ln" style="fill:#e63946" d="M-60 0 l-60 90 l60 -20z M60 0 l60 90 l-60 -20z"/>'
+                      '<path class="ln" style="fill:#fff" d="M0 -220 q80 90 60 260 h-120 q-20 -170 60 -260z"/>'
+                      '<circle class="ln" cx="0" cy="-60" r="34" style="fill:#7fd3ff"/></g>')
+
+
+def jingle_bell(x, y, s=1.0, color="#ffd23f"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M-110 80 q20 -20 25 -110 q5 -90 85 -100 q80 10 85 100 q5 90 25 110z"/>'
+                      '<circle class="ln" cx="0" cy="105" r="24" style="fill:#f08a00"/>'
+                      '<path class="ln" style="fill:#2e9d5b;stroke-width:5" d="M0 -130 q-50 -40 -80 -10 q40 20 80 10 q50 -40 80 -10 q-40 20 -80 10z"/>')
+
+
+def note(x, y, s=1.0, color="#7b3fe4"):
+    return g(x, y, s, f'<path class="ln" style="stroke:{color};stroke-width:10" d="M-40 60 v-170 l120 -30 v170"/>'
+                      f'<ellipse class="ln" cx="-65" cy="62" rx="30" ry="24" style="fill:{color}"/><ellipse class="ln" cx="55" cy="32" rx="30" ry="24" style="fill:{color}"/>')
