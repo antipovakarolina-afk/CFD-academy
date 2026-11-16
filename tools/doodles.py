@@ -629,3 +629,71 @@ def jingle_bell(x, y, s=1.0, color="#ffd23f"):
 def note(x, y, s=1.0, color="#7b3fe4"):
     return g(x, y, s, f'<path class="ln" style="stroke:{color};stroke-width:10" d="M-40 60 v-170 l120 -30 v170"/>'
                       f'<ellipse class="ln" cx="-65" cy="62" rx="30" ry="24" style="fill:{color}"/><ellipse class="ln" cx="55" cy="32" rx="30" ry="24" style="fill:{color}"/>')
+
+
+# ---------- смешные подарки ----------
+def gift(x, y, s=1.0, box="#e63946", ribbon="#ffd23f"):
+    return g(x, y, s, f'<rect class="ln" x="-110" y="-60" width="220" height="170" style="fill:{box}"/>'
+                      f'<rect class="ln" x="-125" y="-100" width="250" height="50" style="fill:{box}"/>'
+                      f'<path class="ln" style="stroke:{ribbon};stroke-width:20" d="M0 -100 V110"/>'
+                      f'<path class="ln" style="fill:{ribbon}" d="M0 -100 q-70 -70 -90 -20 q20 30 90 20 q70 -70 90 -20 q-20 30 -90 20z"/>')
+
+
+def sock(x, y, s=1.0, color="#4fa3f7", r=0, face=True):
+    f = ('<circle class="ln" cx="0" cy="-60" r="48" style="fill:#c98b5a"/>'
+         '<path class="ln" style="fill:#8a5a3b" d="M-46 -82 q-30 -10 -24 40 q16 -10 22 -24z M46 -82 q30 -10 24 40 q-16 -10 -22 -24z"/>'
+         '<circle cx="-16" cy="-66" r="6" style="fill:#111"/><circle cx="16" cy="-66" r="6" style="fill:#111"/>'
+         '<ellipse cx="0" cy="-48" rx="10" ry="7" style="fill:#111"/><path class="ln" style="stroke-width:4" d="M-12 -34 q12 10 24 0"/>') if face else ""
+    return g(x, y, s, f'<g transform="rotate({r})"><path class="ln" style="fill:{color}" d="M-60 -180 h120 v200 q0 40 40 50 q60 15 50 70 q-10 50 -80 40 '
+                      'q-90 -10 -120 -60 q-10 -20 -10 -60z"/>'
+                      '<rect class="ln" x="-60" y="-200" width="120" height="40" style="fill:#fff"/>' + f + '</g>')
+
+
+def gummy(x, y, s=1.0, color="#ff5a6e"):
+    return g(x, y, s, f'<g style="opacity:.92">'
+                      f'<circle class="ln" cx="-45" cy="-150" r="28" style="fill:{color}"/><circle class="ln" cx="45" cy="-150" r="28" style="fill:{color}"/>'
+                      f'<circle class="ln" cx="0" cy="-100" r="70" style="fill:{color}"/>'
+                      f'<ellipse class="ln" cx="0" cy="40" rx="90" ry="110" style="fill:{color}"/>'
+                      f'<ellipse class="ln" cx="-95" cy="0" rx="30" ry="45" style="fill:{color}"/><ellipse class="ln" cx="95" cy="0" rx="30" ry="45" style="fill:{color}"/>'
+                      f'<ellipse class="ln" cx="-55" cy="140" rx="38" ry="30" style="fill:{color}"/><ellipse class="ln" cx="55" cy="140" rx="38" ry="30" style="fill:{color}"/>'
+                      '<circle cx="-25" cy="-110" r="7" style="fill:#111"/><circle cx="25" cy="-110" r="7" style="fill:#111"/>'
+                      '<path class="ln" style="stroke-width:5" d="M-14 -80 q14 12 28 0"/>'
+                      '<ellipse cx="-40" cy="10" rx="18" ry="30" style="fill:#fff;opacity:.4"/></g>')
+
+
+def coal(x, y, s=1.0, wrapper=True):
+    w = ('<path class="ln" style="fill:#ff8fb1" d="M-140 0 l-60 -50 v100z M140 0 l60 -50 v100z"/>' if wrapper else "")
+    return g(x, y, s, w + '<path class="ln" style="fill:#2b2b30" d="M-140 -10 l40 -70 l90 -20 l80 30 l60 60 l-20 70 l-90 30 l-110 -20 z"/>'
+                          '<path class="ln" style="stroke:#55555e;stroke-width:5" d="M-60 -50 l40 30 M30 -40 l30 50 M-90 30 l50 -10"/>')
+
+
+def toilet(x, y, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="60" y="-260" width="110" height="170" rx="16" style="fill:#fff"/>'
+                      '<path class="ln" style="fill:#fff" d="M-170 -90 h340 q0 120 -120 150 v90 h-100 v-90 q-120 -30 -120 -150z"/>'
+                      '<ellipse class="ln" cx="0" cy="-90" rx="170" ry="40" style="fill:#e9f2ff"/>')
+
+
+def golf_set(x, y, s=1.0):
+    return g(x, y, s, '<ellipse class="ln" cx="0" cy="40" rx="220" ry="50" style="fill:#5cc06a"/>'
+                      '<ellipse cx="90" cy="40" rx="24" ry="9" style="fill:#2b2b30"/>'
+                      '<path class="ln" style="stroke-width:6" d="M90 40 V-120"/><path class="ln" style="fill:#e63946" d="M90 -120 l70 25 l-70 25z"/>'
+                      '<circle class="ln" cx="-60" cy="25" r="14" style="fill:#fff;stroke-width:4"/>'
+                      '<path class="ln" style="stroke:#9aa1ab;stroke-width:9" d="M-200 -180 L-90 10"/><path class="ln" style="fill:#9aa1ab" d="M-100 0 h50 v22 h-60z"/>')
+
+
+def pet_rock(x, y, s=1.0, box=True):
+    b = ('<path class="ln" style="fill:#e8c48f" d="M-200 30 h400 v150 h-400z"/>'
+         '<path class="ln" style="fill:#f4dcb0" d="M-200 30 l40 -60 h320 l40 60z"/>' if box else "")
+    return g(x, y, s, b + '<path class="ln" style="fill:#a9a39a" d="M-140 40 q-20 -110 70 -140 q110 -30 170 40 q50 70 -20 110 q-110 30 -220 -10z"/>'
+                          '<circle class="ln" cx="-30" cy="-40" r="28" style="fill:#fff;stroke-width:5"/><circle cx="-24" cy="-34" r="12" style="fill:#111"/>'
+                          '<circle class="ln" cx="45" cy="-45" r="28" style="fill:#fff;stroke-width:5"/><circle cx="51" cy="-39" r="12" style="fill:#111"/>'
+                          '<path class="ln" style="stroke-width:5" d="M-10 10 q20 14 40 0"/>')
+
+
+def cat(x, y, s=1.0, color="#f3a95e"):
+    return g(x, y, s, f'<ellipse class="ln" cx="0" cy="60" rx="90" ry="110" style="fill:{color}"/>'
+                      f'<circle class="ln" cx="0" cy="-90" r="70" style="fill:{color}"/>'
+                      f'<path class="ln" style="fill:{color}" d="M-60 -125 l5 -70 l45 45z M60 -125 l-5 -70 l-45 45z"/>'
+                      '<circle cx="-24" cy="-95" r="8" style="fill:#111"/><circle cx="24" cy="-95" r="8" style="fill:#111"/>'
+                      '<path class="ln" style="stroke-width:5" d="M-12 -70 q12 10 24 0 M-80 -80 h40 M40 -80 h40"/>'
+                      f'<path class="ln" style="stroke:{color};stroke-width:22" d="M80 130 q90 -20 60 -110"/>')
