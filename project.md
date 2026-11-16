@@ -75,3 +75,8 @@ _Далі — поки порожньо. Додамо, коли домовимо
   Модель за замовчуванням — `medium` (перевірено: добре розуміє українську).
   Запуск: `python tools/transcribe.py originals/моє_відео.mp4` → у `output/` з'явиться файл субтитрів `.srt`.
   Важливо: потрібна бібліотека `av` версії нижче 16 (`pip install "av<16"`), новіша ламає Whisper.
+- **earshot** (github.com/Leonxlnx/earshot, MIT) — «уши» для Claude: слушает звук и видео, даёт оценку
+  (`earshot critique output/рилс.mp4`), подбирает и рендерит звуковые эффекты из банка в 252 звука
+  (`earshot sfx list`, `earshot sfx render click/soft -o x.wav`). Работает на процессоре, без интернета после установки.
+  Подключён как навык (`.claude/skills/earshot`) и MCP-сервер (`.mcp.json`).
+
