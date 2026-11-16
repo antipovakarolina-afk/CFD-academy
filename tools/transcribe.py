@@ -2,7 +2,7 @@
 
 Використання:
     python tools/transcribe.py originals/video.mp4            # українська за замовчуванням
-    python tools/transcribe.py originals/video.mp4 --model medium
+    python tools/transcribe.py originals/video.mp4 --model large-v3
 """
 import argparse
 from pathlib import Path
@@ -22,7 +22,7 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("file", help="відео або аудіо файл")
     p.add_argument("--lang", default="uk", help="мова (uk, en, ...)")
-    p.add_argument("--model", default="small", help="tiny / base / small / medium / large-v3")
+    p.add_argument("--model", default="medium", help="tiny / base / small / medium / large-v3")
     args = p.parse_args()
 
     src = Path(args.file)
