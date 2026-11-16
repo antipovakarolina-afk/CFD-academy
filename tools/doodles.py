@@ -317,3 +317,18 @@ def clock12(x, y, s=1.0):
     return g(x, y, s, '<circle class="ln" cx="0" cy="0" r="90" style="fill:#fff"/>'
                       '<path class="ln" d="M0 0 V-62 M0 0 V-45" style="stroke-width:9"/>'
                       + "".join(f'<circle cx="{75 * __import__("math").sin(i * 0.5236):.0f}" cy="{-75 * __import__("math").cos(i * 0.5236):.0f}" r="5" style="fill:#111"/>' for i in range(12)))
+
+
+# ---------- заставка без персонажа ----------
+def intro_search(query="", bg_blob="#cfe0ff"):
+    """Начало каждого ролика: «what did I google today?» + телефон с поисковой строкой."""
+    q = (f'<g class="pop"><text class="hand" x="482" y="738" font-size="36" text-anchor="middle">{query}</text></g>'
+         if query else "")
+    return (blob(500, 640, 330, bg_blob)
+            + hand("what did I", 500, 150, 95) + google_word(500, 290, 170) + hand("today?", 500, 400, 95)
+            + '<rect class="ln" x="300" y="470" width="400" height="500" rx="46" style="fill:#fff"/>'
+            + '<rect class="ln" x="335" y="690" width="330" height="70" rx="35" style="fill:#f4f6fa;stroke-width:5"/>'
+            + '<circle class="ln" cx="640" cy="725" r="15" style="stroke-width:5"/><path class="ln" style="stroke-width:5" d="M651 736 l12 12"/>'
+            + google_word(500, 640, 90)
+            + '<path class="ln" style="stroke:#c9ced6;stroke-width:6" d="M350 810 h300 M350 850 h240 M350 890 h270"/>'
+            + q + star(200, 560, 1.2) + star(820, 520, 0.9, "#ff8fb1") + qmarks(760, 850))
