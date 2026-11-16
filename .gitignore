@@ -7,3 +7,5 @@ output/*
 *.mov
 *.mkv
 __pycache__/
+assets/voices/*.onnx
+output/.work-*/
