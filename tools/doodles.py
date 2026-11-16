@@ -194,73 +194,51 @@ def google_word(x=500, y=500, size=150, rot=0, word="google"):
 
 
 def me(x=500, y=620, s=1.0, pose="phone", mood="smile",
-       hair="#3b2a22", skin="#f7dccb", coat="#1c1b20", lips="#e48a90", iris="#8fb3d9", nails="#7a1730"):
-    """Героиня — автор блога: тёмно-каштановые волосы, собранные назад, лёгкая чёлка-шторка
-    и пряди у лица, серо-голубые глаза, розовые губы, золотые серёжки-колечки,
-    чёрное пальто с высоким воротником и поясом, бордовый маникюр."""
+       hair="#1f2a5a", skin="#f7d9c4", sweater="#5b8def", stripe="#ff8fb1", skirt="#3b2a4a", shoes="#7a1f3d"):
+    """Героиня: тёмно-синее каре с чёлкой, заколка-звёздочка, большие глаза, свитер в полоску."""
     mouth = {
-        "smile": f'<path class="ln" style="fill:{lips};stroke-width:3.5" d="M-22 -168 q22 20 44 0 q-22 7 -44 0z"/>',
-        "big": f'<path class="ln" style="fill:{lips};stroke-width:3.5" d="M-24 -180 q24 -4 48 0 q-24 32 -48 0z"/>'
-               '<path d="M-17 -167 q17 -2 34 0 l-3 6 q-14 -1 -28 0z" style="fill:#fff"/>',
-        "o": f'<ellipse class="ln" style="fill:{lips};stroke-width:3.5" cx="0" cy="-162" rx="11" ry="12"/>'
-             '<ellipse cx="0" cy="-161" rx="5" ry="6" style="fill:#7a2230"/>',
-        "worry": f'<path class="ln" style="fill:{lips};stroke-width:3.5" d="M-18 -160 q18 -12 36 0 q-18 8 -36 0z"/>',
+        "smile": '<path class="ln" style="stroke-width:6" d="M-20 -182 q20 18 40 0"/>',
+        "big": '<path class="ln" style="fill:#c0392b;stroke-width:6" d="M-24 -186 q24 34 48 0 z"/>',
+        "o": '<ellipse class="ln" style="fill:#7a2230;stroke-width:5" cx="0" cy="-178" rx="10" ry="13"/>',
+        "worry": '<path class="ln" style="stroke-width:6" d="M-18 -172 q18 -14 36 0"/>',
     }[mood]
-    def eye(ex):
-        o = 1 if ex > 0 else -1          # ресничка — наружу
-        return (f'<ellipse cx="{ex}" cy="-198" rx="15" ry="16" style="fill:#fff"/>'
-                f'<circle cx="{ex}" cy="-196" r="11" style="fill:{iris}"/>'
-                f'<circle cx="{ex}" cy="-196" r="5.5" style="fill:#111"/>'
-                f'<circle cx="{ex + 4}" cy="-201" r="3.5" style="fill:#fff"/>'
-                f'<path class="ln" style="stroke-width:4" d="M{ex - 16} -203 Q{ex} -218 {ex + 16} -203"/>'
-                f'<path class="ln" style="stroke-width:3" d="M{ex + 15 * o} -206 l{7 * o} -5"/>')
-    hands = lambda pts: "".join(
-        f'<circle class="ln" cx="{hx}" cy="{hy}" r="14" style="fill:{skin}"/>'
-        f'<circle cx="{hx + 6}" cy="{hy - 9}" r="4" style="fill:{nails}"/><circle cx="{hx - 5}" cy="{hy - 10}" r="4" style="fill:{nails}"/>'
-        for hx, hy in pts)
-    sleeve = f'style="stroke:{coat};stroke-width:22"'
+    stripes = ""
+    for yy in (-75, -30, 15):
+        hw = 62 + (yy + 118) / 178 * 23
+        stripes += f'<path class="ln" style="stroke:{stripe};stroke-width:16;stroke-linecap:butt" d="M{-hw + 6:.0f} {yy} H{hw - 6:.0f}"/>'
     arms = {
-        "phone": (f'<path class="ln" {sleeve} d="M-62 -100 Q-105 -20 -24 -28"/><path class="ln" {sleeve} d="M62 -100 Q105 -20 24 -28"/>'
-                  '<rect class="ln" x="-28" y="-100" width="56" height="92" rx="12" style="fill:#c9c5bd"/>'
-                  '<circle cx="-12" cy="-84" r="6" style="fill:#333"/><circle cx="4" cy="-84" r="6" style="fill:#333"/><circle cx="-4" cy="-70" r="6" style="fill:#333"/>'
-                  + hands([(-22, -28), (22, -28)])),
-        "wave": (f'<path class="ln" {sleeve} d="M-62 -100 Q-100 -10 -92 50"/>'
-                 f'<path class="ln" {sleeve} d="M62 -100 Q140 -150 135 -245"/>' + hands([(-92, 60), (135, -258)])),
-        "think": (f'<path class="ln" {sleeve} d="M-62 -100 Q-100 -10 -92 50"/>'
-                  f'<path class="ln" {sleeve} d="M62 -100 Q120 -60 45 -150"/>' + hands([(-92, 60), (42, -156)])),
-        "down": (f'<path class="ln" {sleeve} d="M-62 -100 Q-100 -10 -92 50"/><path class="ln" {sleeve} d="M62 -100 Q100 -10 92 50"/>'
-                 + hands([(-92, 60), (92, 60)])),
+        "phone": ('<path class="ln" d="M-62 -105 Q-105 -20 -22 -25"/><path class="ln" d="M62 -105 Q105 -20 22 -25"/>'
+                  '<rect class="ln" x="-26" y="-95" width="52" height="88" rx="10" style="fill:#222"/>'
+                  f'<circle cx="-22" cy="-25" r="13" style="fill:{skin}" class="ln"/><circle cx="22" cy="-25" r="13" style="fill:{skin}" class="ln"/>'),
+        "wave": ('<path class="ln" d="M-62 -105 Q-100 -10 -92 55"/>'
+                 '<path class="ln" d="M62 -105 Q140 -150 135 -250"/>'
+                 f'<circle class="ln" cx="135" cy="-262" r="16" style="fill:{skin}"/>'),
+        "think": ('<path class="ln" d="M-62 -105 Q-100 -10 -92 55"/>'
+                  '<path class="ln" d="M62 -105 Q120 -60 40 -150"/>'
+                  f'<circle class="ln" cx="40" cy="-155" r="15" style="fill:{skin}"/>'),
+        "down": '<path class="ln" d="M-62 -105 Q-100 -10 -92 55"/><path class="ln" d="M62 -105 Q100 -10 92 55"/>',
     }[pose]
     body = (
-        # хвост сзади и волосы за головой
-        f'<path class="ln" style="fill:{hair}" d="M70 -300 Q150 -290 140 -200 Q135 -150 110 -120 Q120 -190 90 -250 Z"/>'
-        f'<path class="ln" style="fill:{hair}" d="M-96 -170 Q-118 -260 -90 -305 Q0 -375 90 -305 Q118 -260 96 -170 Z"/>'
-        # ноги, туфли, пальто с поясом и воротником
-        '<path class="ln" style="stroke:#2a2a30;stroke-width:12" d="M-35 130 v115 M35 130 v115"/>'
-        '<ellipse class="ln" cx="-46" cy="252" rx="28" ry="12" style="fill:#111"/><ellipse class="ln" cx="46" cy="252" rx="28" ry="12" style="fill:#111"/>'
-        f'<path class="ln" style="fill:{coat}" d="M-60 -118 Q0 -128 60 -118 L95 140 H-95 Z"/>'
-        '<path class="ln" style="stroke:#55545e;stroke-width:5" d="M0 -110 L6 140"/>'
-        '<path class="ln" style="stroke:#55545e;stroke-width:12" d="M-78 30 H80"/>'
-        f'<path class="ln" style="fill:{coat};stroke:#55545e;stroke-width:5" d="M-48 -150 L-62 -100 L-8 -60 L-20 -130 Z"/>'
-        f'<path class="ln" style="fill:{coat};stroke:#55545e;stroke-width:5" d="M48 -150 L62 -100 L8 -60 L20 -130 Z"/>'
-        # шея и лицо
-        f'<path class="ln" style="fill:{skin}" d="M-18 -150 v30 h36 v-30z"/>'
-        f'<ellipse class="ln" cx="0" cy="-222" rx="80" ry="90" style="fill:{skin}"/>'
-        '<circle cx="-50" cy="-176" r="13" style="fill:#ff9fb3;opacity:.55"/><circle cx="50" cy="-176" r="13" style="fill:#ff9fb3;opacity:.55"/>'
-        + eye(-32) + eye(32) +
-        '<path class="ln" style="stroke-width:4" d="M-2 -186 q5 10 -2 13"/>'
+        # волосы сзади (каре)
+        f'<path class="ln" style="fill:{hair}" d="M-122 -135 Q-135 -255 -100 -305 Q0 -385 100 -305 Q135 -255 122 -135 '
+        'Q60 -118 0 -128 Q-60 -118 -122 -135 Z"/>'
+        # шея, свитер, юбка, ноги, туфли
+        '<path class="ln" d="M-14 -140 v26 M14 -140 v26"/>'
+        f'<path class="ln" style="fill:{sweater}" d="M-62 -118 Q0 -130 62 -118 L85 60 H-85 Z"/>' + stripes +
+        f'<path class="ln" style="fill:{skirt}" d="M-85 60 L-100 135 H100 L85 60 Z"/>'
+        '<path class="ln" d="M-40 135 v115 M40 135 v115"/>'
+        f'<ellipse class="ln" cx="-52" cy="256" rx="30" ry="13" style="fill:{shoes}"/>'
+        f'<ellipse class="ln" cx="52" cy="256" rx="30" ry="13" style="fill:{shoes}"/>'
+        # лицо
+        f'<ellipse class="ln" cx="0" cy="-222" rx="82" ry="90" style="fill:{skin}"/>'
+        '<circle cx="-50" cy="-190" r="13" style="fill:#ff9fb3;opacity:.7"/><circle cx="50" cy="-190" r="13" style="fill:#ff9fb3;opacity:.7"/>'
+        '<ellipse cx="-32" cy="-218" rx="14" ry="19" style="fill:#111"/><ellipse cx="32" cy="-218" rx="14" ry="19" style="fill:#111"/>'
+        '<circle cx="-27" cy="-225" r="5" style="fill:#fff"/><circle cx="37" cy="-225" r="5" style="fill:#fff"/>'
         + mouth +
-        # серёжки-колечки
-        '<circle class="ln" cx="-80" cy="-188" r="9" style="stroke:#d4a537;stroke-width:4"/>'
-        '<circle class="ln" cx="80" cy="-188" r="9" style="stroke:#d4a537;stroke-width:4"/>'
-        # пряди у лица и чёлка-шторка
-        f'<path class="ln" style="fill:{hair};stroke-width:5" d="M-86 -255 Q-104 -190 -92 -125 Q-80 -175 -66 -228 Z"/>'
-        f'<path class="ln" style="fill:{hair};stroke-width:5" d="M86 -255 Q104 -190 92 -125 Q80 -175 66 -228 Z"/>'
-        f'<path class="ln" style="fill:{hair}" d="M0 -330 Q-92 -328 -90 -240 Q-88 -205 -78 -196 Q-74 -228 -62 -224 '
-        'Q-54 -250 -40 -236 Q-28 -258 -14 -244 Q-6 -280 0 -300 Z"/>'
-        f'<path class="ln" style="fill:{hair}" d="M0 -330 Q92 -328 90 -240 Q88 -205 78 -196 Q74 -228 62 -224 '
-        'Q54 -250 40 -236 Q28 -258 14 -244 Q6 -280 0 -300 Z"/>'
-        f'<path class="ln" style="stroke:#5a4034;stroke-width:3" d="M-40 -300 q-6 30 -10 50 M10 -305 q-4 30 -6 48 M45 -295 q4 25 6 45"/>'
+        # чёлка и заколка
+        f'<path class="ln" style="fill:{hair}" d="M-90 -245 Q-85 -325 0 -326 Q85 -325 90 -245 Q66 -268 44 -252 '
+        'Q22 -274 0 -256 Q-22 -274 -44 -252 Q-66 -268 -90 -245 Z"/>'
+        '<path class="ln" style="fill:#ffd23f;stroke-width:4" d="M62 -300 l7 -16 l7 16 l17 2 l-13 11 l4 17 l-15 -9 l-15 9 l4 -17 l-13 -11z"/>'
         + arms
     )
     return g(x, y, s, body)
