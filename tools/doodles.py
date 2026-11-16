@@ -6,8 +6,8 @@ def g(x, y, s, body):
 
 
 def hand(text, x=500, y=500, size=110, cls="hand", rot=0):
-    return (f'<text class="{cls}" x="{x}" y="{y}" font-size="{size}" text-anchor="middle" '
-            f'transform="rotate({rot} {x} {y})">{text}</text>')
+    return (f'<g class="pop"><text class="{cls}" x="{x}" y="{y}" font-size="{size}" text-anchor="middle" '
+            f'transform="rotate({rot} {x} {y})">{text}</text></g>')
 
 
 def person(x=500, y=520, s=1.0, mood="smile", arms="down"):

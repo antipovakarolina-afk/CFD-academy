@@ -7,6 +7,7 @@
 Сцены, где на картинке крупно год (цифры), получают «звоночек» (celesta), последняя — колокольчик,
 остальные — мягкий «плоп». Музыка: калимба, C–Am–F–G, ~84 удара в минуту, приглушается под голосом.
 """
+import json
 import re
 import subprocess
 import sys
@@ -46,13 +47,8 @@ def add(buf, y, t, gain_db=0.0, pan=0.0):
 
 
 def scene_starts(work):
-    t, starts = 0.0, []
-    lines = (work / "frames.txt").read_text().splitlines()
-    for f, d in zip(lines[0::2], lines[1::2]):
-        if f.endswith("_00.png'"):
-            starts.append(t)
-        t += float(d.split()[1])
-    return starts, t
+    sc = json.loads((work / "scenes.json").read_text())
+    return [x["start"] for x in sc], sc[-1]["start"] + sc[-1]["dur"]
 
 
 def main(spec):
