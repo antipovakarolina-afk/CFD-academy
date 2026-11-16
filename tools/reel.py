@@ -78,7 +78,7 @@ function setup(win) {
 }
 function frame(t, cap, seed) {
   document.getAnimations().forEach(a => { a.currentTime = t * 1000; });
-  document.getElementById('cap').textContent = cap;
+  document.getElementById('cap').innerHTML = cap;
   document.getElementById('turb').setAttribute('seed', seed);
 }
 </script></body></html>"""
@@ -89,6 +89,18 @@ def mode(bg: str) -> str:
     h = bg.lstrip("#")
     r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
     return "dark" if 0.299 * r + 0.587 * g + 0.114 * b < 110 else ""
+
+
+GOOGLE = ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"]
+
+
+def cap_html(text: str) -> str:
+    """субтитр в HTML; слово google — в цветах Google"""
+    import re
+    def paint(m):
+        w = m.group(0)
+        return "".join(f'<span style="color:{GOOGLE[i % 6]}">{c}</span>' for i, c in enumerate(w[:6])) + w[6:]
+    return re.sub(r"(?i)google\w*", paint, html.escape(text))
 
 
 def chunks(text: str):
@@ -145,7 +157,7 @@ def main(spec_path: str) -> None:
                 if key is not None and key in shots:
                     return shots[key]
                 png = work / f"s{i:02}_{len(shots):03}.png"
-                page.evaluate("([t, c, s]) => frame(t, c, s)", [t, parts[cap], seed])
+                page.evaluate("([t, c, s]) => frame(t, c, s)", [t, cap_html(parts[cap]), seed])
                 page.screenshot(path=str(png))
                 shots[key if key is not None else ("intro", t)] = png
                 return png

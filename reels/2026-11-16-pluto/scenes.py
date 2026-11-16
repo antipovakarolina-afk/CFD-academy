@@ -20,8 +20,9 @@ PLUTO = "#d9b48f"
 
 SCENES = [
     dict(bg=P["blue"], text="What did I google today?",
-         svg=blob(470, 560, 330, "#cfe0ff") + person(430, 620, 1.1, "o", "front") + phone(470, 600, 0.8)
-             + star(700, 260, 1.4) + star(800, 380, 0.9, "#ff8fb1") + qmarks(640, 250)),
+         svg=blob(330, 600, 300, "#cfe0ff") + me(330, 640, 0.9, "phone", "o")
+             + hand("what did I", 720, 330, 85) + google_word(720, 470, 150) + hand("today?", 720, 580, 85)
+             + star(850, 220, 1.2) + star(620, 760, 0.9, "#ff8fb1")),
     dict(bg=P["lilac"], text="Why is Pluto not a planet anymore?",
          svg=blob(500, 560, 300, "#ddd0ff", 1) + planet(500, 560, 190, PLUTO, face="sad")
              + hand("not a planet?!", 500, 230, 120, "hand purple", -4)),
@@ -58,7 +59,9 @@ SCENES = [
              + sun(430, 560, 80) + planet(680, 355, 40, PLUTO, face="o")
              + hand("248 years", 640, 880, 130, "hand pink", -4)),
     dict(bg=P["lilac"], text="So now Pluto is a dwarf planet. Small, but famous. Honestly? Same.",
-         svg=blob(500, 560, 320, "#ddd0ff", 3) + planet(500, 560, 170, PLUTO, face="smile")
-             + g(500, 360, 1, '<path class="ln" style="fill:#ffd23f" d="M-90 0 L-70 -80 L-30 -30 L0 -100 L30 -30 L70 -80 L90 0 Z"/>')
-             + hand("dwarf planet", 500, 860, 120, "hand purple", -3) + star(220, 280, 1.2) + star(800, 760, 1.0, "#ff8fb1")),
+         svg=blob(650, 500, 260, "#ddd0ff", 3) + planet(650, 500, 140, PLUTO, face="smile")
+             + g(650, 335, 0.8, '<path class="ln" style="fill:#ffd23f" d="M-90 0 L-70 -80 L-30 -30 L0 -100 L30 -30 L70 -80 L90 0 Z"/>')
+             + me(260, 640, 0.75, "wave", "big")
+             + hand("dwarf planet", 650, 760, 110, "hand purple", -3) + hand("same :)", 650, 900, 100, "hand pink", 4)
+             + star(880, 250, 1.2) + star(470, 250, 0.9, "#ff8fb1")),
 ]

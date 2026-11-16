@@ -181,3 +181,64 @@ def girl(x=500, y=520, s=1.0, dress="#e0457b", hair="#7a4a2a"):
     body = (f'<path class="ln" style="fill:{dress}" d="M-35 -110 L-90 140 H90 L35 -110 Z"/>'
             '<path class="ln" d="M-30 140 v100 M30 140 v100 M-45 240 h30 M15 240 h30"/>')
     return g(x, y, s, head + body) + person(x, y, s, "smile", "down").replace('class="ln" d="M-30 -110', 'class="ln" style="opacity:0" d="M-30 -110', 1)
+
+
+# ---------- героиня блога (оригинальный персонаж) ----------
+GOOGLE = ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"]
+
+
+def google_word(x=500, y=500, size=150, rot=0, word="google"):
+    spans = "".join(f'<tspan style="fill:{GOOGLE[i % 6]}">{ch}</tspan>' for i, ch in enumerate(word))
+    return (f'<g class="pop"><text class="hand" x="{x}" y="{y}" font-size="{size}" text-anchor="middle" '
+            f'transform="rotate({rot} {x} {y})">{spans}</text></g>')
+
+
+def me(x=500, y=620, s=1.0, pose="phone", mood="smile",
+       hair="#1f2a5a", skin="#f7d9c4", sweater="#5b8def", stripe="#ff8fb1", skirt="#3b2a4a", shoes="#7a1f3d"):
+    """Героиня: тёмно-синее каре с чёлкой, заколка-звёздочка, большие глаза, свитер в полоску."""
+    mouth = {
+        "smile": '<path class="ln" style="stroke-width:6" d="M-20 -182 q20 18 40 0"/>',
+        "big": '<path class="ln" style="fill:#c0392b;stroke-width:6" d="M-24 -186 q24 34 48 0 z"/>',
+        "o": '<ellipse class="ln" style="fill:#7a2230;stroke-width:5" cx="0" cy="-178" rx="10" ry="13"/>',
+        "worry": '<path class="ln" style="stroke-width:6" d="M-18 -172 q18 -14 36 0"/>',
+    }[mood]
+    stripes = ""
+    for yy in (-75, -30, 15):
+        hw = 62 + (yy + 118) / 178 * 23
+        stripes += f'<path class="ln" style="stroke:{stripe};stroke-width:16;stroke-linecap:butt" d="M{-hw + 6:.0f} {yy} H{hw - 6:.0f}"/>'
+    arms = {
+        "phone": ('<path class="ln" d="M-62 -105 Q-105 -20 -22 -25"/><path class="ln" d="M62 -105 Q105 -20 22 -25"/>'
+                  '<rect class="ln" x="-26" y="-95" width="52" height="88" rx="10" style="fill:#222"/>'
+                  f'<circle cx="-22" cy="-25" r="13" style="fill:{skin}" class="ln"/><circle cx="22" cy="-25" r="13" style="fill:{skin}" class="ln"/>'),
+        "wave": ('<path class="ln" d="M-62 -105 Q-100 -10 -92 55"/>'
+                 '<path class="ln" d="M62 -105 Q140 -150 135 -250"/>'
+                 f'<circle class="ln" cx="135" cy="-262" r="16" style="fill:{skin}"/>'),
+        "think": ('<path class="ln" d="M-62 -105 Q-100 -10 -92 55"/>'
+                  '<path class="ln" d="M62 -105 Q120 -60 40 -150"/>'
+                  f'<circle class="ln" cx="40" cy="-155" r="15" style="fill:{skin}"/>'),
+        "down": '<path class="ln" d="M-62 -105 Q-100 -10 -92 55"/><path class="ln" d="M62 -105 Q100 -10 92 55"/>',
+    }[pose]
+    body = (
+        # волосы сзади (каре)
+        f'<path class="ln" style="fill:{hair}" d="M-122 -135 Q-135 -255 -100 -305 Q0 -385 100 -305 Q135 -255 122 -135 '
+        'Q60 -118 0 -128 Q-60 -118 -122 -135 Z"/>'
+        # шея, свитер, юбка, ноги, туфли
+        '<path class="ln" d="M-14 -140 v26 M14 -140 v26"/>'
+        f'<path class="ln" style="fill:{sweater}" d="M-62 -118 Q0 -130 62 -118 L85 60 H-85 Z"/>' + stripes +
+        f'<path class="ln" style="fill:{skirt}" d="M-85 60 L-100 135 H100 L85 60 Z"/>'
+        '<path class="ln" d="M-40 135 v115 M40 135 v115"/>'
+        f'<ellipse class="ln" cx="-52" cy="256" rx="30" ry="13" style="fill:{shoes}"/>'
+        f'<ellipse class="ln" cx="52" cy="256" rx="30" ry="13" style="fill:{shoes}"/>'
+        # лицо
+        f'<ellipse class="ln" cx="0" cy="-222" rx="82" ry="90" style="fill:{skin}"/>'
+        '<circle cx="-50" cy="-190" r="13" style="fill:#ff9fb3;opacity:.7"/><circle cx="50" cy="-190" r="13" style="fill:#ff9fb3;opacity:.7"/>'
+        '<ellipse cx="-32" cy="-218" rx="14" ry="19" style="fill:#111"/><ellipse cx="32" cy="-218" rx="14" ry="19" style="fill:#111"/>'
+        '<circle cx="-27" cy="-225" r="5" style="fill:#fff"/><circle cx="37" cy="-225" r="5" style="fill:#fff"/>'
+        + mouth +
+        # чёлка и заколка
+        f'<path class="ln" style="fill:{hair}" d="M-90 -245 Q-85 -325 0 -326 Q85 -325 90 -245 Q66 -268 44 -252 '
+        'Q22 -274 0 -256 Q-22 -274 -44 -252 Q-66 -268 -90 -245 Z"/>'
+        '<path class="ln" style="fill:#ffd23f;stroke-width:4" d="M62 -300 l7 -16 l7 16 l17 2 l-13 11 l4 17 l-15 -9 l-15 9 l4 -17 l-13 -11z"/>'
+        + arms
+    )
+    return g(x, y, s, body)
