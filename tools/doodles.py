@@ -111,3 +111,73 @@ def chocolate(x, y, s=1.0):
     cells = "".join(f'<rect x="{-60 + c * 60}" y="{-90 + r * 60}" width="56" height="56" rx="6" style="fill:#7b4a2c"/>'
                     for r in range(3) for c in range(2))
     return g(x, y, s, '<rect class="ln" x="-70" y="-100" width="140" height="190" rx="10" style="fill:#5a3420"/>' + cells)
+
+
+# ---------- цвет ----------
+PASTEL = {"blue": "#e6f0ff", "yellow": "#fff4cc", "pink": "#ffe3ee", "mint": "#dff6ea", "lilac": "#eee6ff",
+          "peach": "#ffe9d9", "night": "#1d2340"}
+
+
+def blob(x, y, r, color, k=0):
+    """мягкое цветное пятно-подложка неправильной формы"""
+    import math
+    pts = []
+    for i in range(10):
+        a = i / 10 * 2 * math.pi
+        rr = r * (0.85 + 0.15 * math.sin(3 * a + k))
+        pts.append((x + rr * math.cos(a), y + rr * math.sin(a)))
+    d = f"M{pts[0][0]:.0f} {pts[0][1]:.0f} " + " ".join(
+        f"Q{(pts[i][0] + pts[(i + 1) % 10][0]) / 2 + 0:.0f} {(pts[i][1] + pts[(i + 1) % 10][1]) / 2:.0f} "
+        f"{pts[(i + 1) % 10][0]:.0f} {pts[(i + 1) % 10][1]:.0f}" for i in range(10)) + "Z"
+    return f'<path d="{d}" style="fill:{color}"/>'
+
+
+def planet(x, y, r, color, ring=None, face=None, stripes=None):
+    out = f'<circle class="ln" cx="{x}" cy="{y}" r="{r}" style="fill:{color}"/>'
+    if stripes:
+        out += "".join(f'<path class="ln" style="stroke:{stripes};stroke-width:{max(3, r // 12)}" '
+                       f'd="M{x - r * 0.85} {y + o * r} q{r * 0.85} {r * 0.15} {r * 1.7} 0"/>' for o in (-0.35, 0.05, 0.4))
+    if ring:
+        out += (f'<ellipse class="ln" cx="{x}" cy="{y}" rx="{r * 1.7}" ry="{r * 0.45}" '
+                f'style="stroke:{ring};stroke-width:{max(5, r // 8)}" transform="rotate(-15 {x} {y})"/>')
+    if face:
+        e = r * 0.28
+        out += (f'<circle cx="{x - e}" cy="{y - e * 0.4}" r="{max(4, r * 0.07)}" style="fill:#111"/>'
+                f'<circle cx="{x + e}" cy="{y - e * 0.4}" r="{max(4, r * 0.07)}" style="fill:#111"/>')
+        mouth = {"smile": f"M{x - e} {y + e * 0.6} q{e} {e * 0.9} {e * 2} 0",
+                 "sad": f"M{x - e} {y + e * 1.1} q{e} {-e * 0.9} {e * 2} 0",
+                 "o": None}[face]
+        out += (f'<path class="ln" d="{mouth}"/>' if mouth else
+                f'<circle class="ln" cx="{x}" cy="{y + e * 0.8}" r="{e * 0.3}"/>')
+    return out
+
+
+def sun(x, y, r=110):
+    import math
+    rays = "".join(f'<path class="ln" style="stroke:#f08a00" d="M{x + (r + 20) * math.cos(a):.0f} {y + (r + 20) * math.sin(a):.0f} '
+                   f'L{x + (r + 70) * math.cos(a):.0f} {y + (r + 70) * math.sin(a):.0f}"/>'
+                   for a in [i * math.pi / 6 for i in range(12)])
+    return f'<circle class="ln" cx="{x}" cy="{y}" r="{r}" style="fill:#ffd23f"/>' + rays
+
+
+def star(x, y, s=1.0, color="#ffd23f"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color};stroke-width:5" '
+                      'd="M0 -30 L8 -8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8 -8Z"/>')
+
+
+def check(x, y, s=1.0, ok=True):
+    if ok:
+        return g(x, y, s, '<path class="ln" style="stroke:#1f9d55;stroke-width:14" d="M-35 0 L-10 28 L40 -32"/>')
+    return g(x, y, s, '<path class="ln" style="stroke:#d7263d;stroke-width:14" d="M-30 -30 L30 30 M30 -30 L-30 30"/>')
+
+
+def rock(x, y, s=1.0, color="#b9a7d6"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color};stroke-width:5" d="M-20 -10 q10 -18 30 -8 q15 12 2 26 q-20 10 -34 -2 q-8 -8 2 -16z"/>')
+
+
+def girl(x=500, y=520, s=1.0, dress="#e0457b", hair="#7a4a2a"):
+    head = (f'<circle class="ln" cx="-62" cy="-190" r="26" style="fill:{hair}"/>'
+            f'<circle class="ln" cx="62" cy="-190" r="26" style="fill:{hair}"/>')
+    body = (f'<path class="ln" style="fill:{dress}" d="M-35 -110 L-90 140 H90 L35 -110 Z"/>'
+            '<path class="ln" d="M-30 140 v100 M30 140 v100 M-45 240 h30 M15 240 h30"/>')
+    return g(x, y, s, head + body) + person(x, y, s, "smile", "down").replace('class="ln" d="M-30 -110', 'class="ln" style="opacity:0" d="M-30 -110', 1)

@@ -1,7 +1,7 @@
 """Собирает рисованный анимированный рилс 9:16 из сценария.
 
 Сценарий — Python-файл со списком SCENES: [{"text": "фраза для голоса", "svg": "<рисунок>"}].
-Необязательно: VOICE = "af_heart" (голос Kokoro), SPEED = 1.08.
+Необязательно: VOICE = "af_heart" (голос Kokoro), SPEED = 1.08; у сцены "bg" — цвет фона.
 Каждая сцена: голос (Kokoro) + рисунок, который прорисовывается на глазах + субтитры сверху.
 После появления рисунок слегка «дышит» (линии дрожат, как в рисованной анимации).
 
@@ -33,14 +33,16 @@ FONTS = [base64.b64encode((ROOT / "assets/fonts" / f).read_bytes()).decode()
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Hand;src:url(data:font/woff2;base64,%(hand)s)}
 @font-face{font-family:Cap;src:url(data:font/woff2;base64,%(cap_font)s)}
-html,body{margin:0;width:%(w)dpx;height:%(h)dpx;background:#fff;overflow:hidden}
+html,body{margin:0;width:%(w)dpx;height:%(h)dpx;background:%(bg)s;overflow:hidden}
 #cap{position:absolute;top:300px;left:90px;right:90px;text-align:center;font:44px/1.25 Cap,serif;color:#111}
 svg{position:absolute;left:40px;top:480px;width:1000px;height:1000px}
 .hand{font-family:Hand,cursive;fill:#111}
-.red{fill:#b3122e}
+.red{fill:#d7263d}.blue{fill:#2f6fdb}.green{fill:#1f9d55}.purple{fill:#7b3fe4}.orange{fill:#f08a00}.pink{fill:#e0457b}
 .ln{fill:none;stroke:#111;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
 .pop{transform-box:fill-box;transform-origin:center}
-</style></head><body><div id="cap"></div>
+.dark #cap{color:#f4f4f4}.dark .hand{fill:#f4f4f4}.dark .ln{stroke:#f4f4f4}.dark .red{fill:#ff5a6e}
+.hand.blue{fill:#2f6fdb}.hand.green{fill:#1f9d55}.hand.purple{fill:#7b3fe4}.hand.orange{fill:#f08a00}.hand.pink{fill:#e0457b}.dark .hand.blue{fill:#7fb0ff}.dark .hand.pink{fill:#ff7fae}.dark .hand.purple{fill:#b79bff}.dark .hand.orange{fill:#ffaa33}
+</style></head><body class="%(mode)s"><div id="cap"></div>
 <svg viewBox="0 0 1000 1000"><defs><filter id="wob"><feTurbulence id="turb" type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="1"/>
 <feDisplacementMap in="SourceGraphic" scale="9"/></filter></defs><g id="art" filter="url(#wob)">%(svg)s</g></svg>
 <script>
@@ -80,6 +82,13 @@ function frame(t, cap, seed) {
   document.getElementById('turb').setAttribute('seed', seed);
 }
 </script></body></html>"""
+
+
+def mode(bg: str) -> str:
+    """тёмный фон -> светлый текст и линии"""
+    h = bg.lstrip("#")
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    return "dark" if 0.299 * r + 0.587 * g + 0.114 * b < 110 else ""
 
 
 def chunks(text: str):
@@ -125,7 +134,7 @@ def main(spec_path: str) -> None:
             def cap_at(t):
                 return int(min(np.searchsorted(bounds, t, side="right"), len(parts) - 1))
 
-            page.set_content(PAGE % dict(hand=FONTS[0], cap_font=FONTS[1], w=W, h=H, svg=sc["svg"]))
+            page.set_content(PAGE % dict(hand=FONTS[0], cap_font=FONTS[1], w=W, h=H, svg=sc["svg"], bg=sc.get("bg", "#fff"), mode=mode(sc.get("bg", "#fff"))))
             page.evaluate("document.fonts.ready")
             intro = min(INTRO, dur * 0.6)
             page.evaluate(f"setup({intro})")
