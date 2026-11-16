@@ -171,3 +171,66 @@ def checklist(x, y, items, gap=110, size=52):
                 f'<path class="s" style="stroke:{col};stroke-width:8" d="M{x} {yy - 30} l40 40 M{x + 40} {yy - 30} l-40 40"/>')
         out += item(mark + text(txt, x + 80, yy + 8, size, WHITE, "sans", "start", 800))
     return out
+
+
+# ---------- праздник ----------
+def i_cal(x, y, s=1.0, month="DEC", day="25", color=RED):
+    return g(x, y, s, f'<rect x="-150" y="-170" width="300" height="320" rx="26" style="fill:{CARD};stroke:{EDGE};stroke-width:3"/>'
+                      f'<path d="M-150 -104 v-40 a26 26 0 0 1 26 -26 h248 a26 26 0 0 1 26 26 v40z" style="fill:{color}"/>'
+                      f'<path class="s" d="M-80 -195 v50 M80 -195 v50"/>'
+                      + text(month, 0, -118, 40, "#fff", "mono", "middle", 800, 0.2)
+                      + text(day, 0, 95, 170, WHITE, "sans", "middle", 800))
+
+
+def i_book(x, y, s=1.0, color=WHITE):
+    return g(x, y, s, f'<path class="s d" style="stroke:{color}" d="M0 -120 q-110 -40 -220 0 v260 q110 -40 220 0 q110 -40 220 0 v-260 q-110 -40 -220 0 v260"/>')
+
+
+def i_sun(x, y, s=1.0, color=YELLOW):
+    rays = "".join(f'<path class="s" style="stroke:{color}" d="M{110 * math.cos(a):.0f} {110 * math.sin(a):.0f} L{160 * math.cos(a):.0f} {160 * math.sin(a):.0f}"/>'
+                   for a in [k * math.pi / 6 for k in range(12)])
+    return g(x, y, s, f'<circle cx="0" cy="0" r="85" style="fill:{color};opacity:.15"/><circle class="s d" style="stroke:{color}" cx="0" cy="0" r="80"/>' + rays)
+
+
+def i_snowflake(x, y, s=1.0, color="#cfe3ff"):
+    arms = ""
+    for k in range(6):
+        a = k * math.pi / 3
+        c, sn = math.cos(a), math.sin(a)
+        arms += (f'<path class="s" style="stroke:{color};stroke-width:4" d="M0 0 L{60 * c:.0f} {60 * sn:.0f} '
+                 f'M{35 * c:.0f} {35 * sn:.0f} L{35 * c + 18 * math.cos(a + 0.8):.0f} {35 * sn + 18 * math.sin(a + 0.8):.0f} '
+                 f'M{35 * c:.0f} {35 * sn:.0f} L{35 * c + 18 * math.cos(a - 0.8):.0f} {35 * sn + 18 * math.sin(a - 0.8):.0f}"/>')
+    return g(x, y, s, arms)
+
+
+def snowfall(n=14, seed=7, area=(0, 0, 1000, 1000)):
+    import random
+    r = random.Random(seed)
+    return "".join(i_snowflake(r.uniform(area[0], area[2]), r.uniform(area[1], area[3]), r.uniform(0.15, 0.35), "rgba(200,220,255,.35)")
+                   for _ in range(n))
+
+
+def i_hat(x, y, s=1.0):
+    return g(x, y, s, f'<path class="s d" style="stroke:{RED}" d="M-150 60 Q-60 -200 120 -150 Q60 -100 90 60"/>'
+                      f'<rect class="s" x="-180" y="50" width="300" height="60" rx="30"/><circle class="s" cx="140" cy="-150" r="30"/>')
+
+
+def i_bottle_soda(x, y, s=1.0, color=RED):
+    return g(x, y, s, f'<path class="s d" style="stroke:{color}" d="M-25 -200 h50 v60 q45 40 45 100 q-20 50 0 100 q0 70 -20 130 h-100 q-20 -60 -20 -130 q20 -50 0 -100 q0 -60 45 -100z"/>')
+
+
+def i_rocket(x, y, s=1.0, r=-30):
+    return g(x, y, s, f'<g transform="rotate({r})"><path class="s d" d="M0 -220 q80 90 60 260 h-120 q-20 -170 60 -260z"/>'
+                      f'<circle class="s" cx="0" cy="-60" r="34" style="stroke:{BLUE}"/>'
+                      f'<path class="s" d="M-60 0 l-60 90 l60 -20 M60 0 l60 90 l-60 -20"/>'
+                      f'<path style="fill:{YELLOW};opacity:.8" d="M-40 50 q40 160 80 0z"/></g>')
+
+
+def i_bell(x, y, s=1.0, color=YELLOW):
+    return g(x, y, s, f'<path class="s d" style="stroke:{color}" d="M-110 80 q20 -20 25 -110 q5 -90 85 -100 q80 10 85 100 q5 90 25 110z"/>'
+                      f'<circle class="s" style="stroke:{color}" cx="0" cy="105" r="22"/><path class="s" style="stroke:{color}" d="M0 -130 v-30"/>')
+
+
+def i_music(x, y, s=1.0, color=GREEN):
+    return g(x, y, s, f'<path class="s d" style="stroke:{color}" d="M-40 60 v-170 l120 -30 v170"/>'
+                      f'<circle class="s" style="stroke:{color}" cx="-65" cy="60" r="26"/><circle class="s" style="stroke:{color}" cx="55" cy="30" r="26"/>')

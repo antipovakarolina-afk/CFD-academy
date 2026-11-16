@@ -87,7 +87,7 @@ function setup(win) {
     const p = e.closest('.in'); return {e, st: (p ? parseFloat(p.dataset.st) : 0.1) + 0.1};
   });
 }
-function fmt(v, dec) { return v.toLocaleString('en-US', {minimumFractionDigits: dec, maximumFractionDigits: dec}); }
+function fmt(v, dec) { if (dec < 0) return String(Math.round(v)); return v.toLocaleString('en-US', {minimumFractionDigits: dec, maximumFractionDigits: dec}); }
 function frame(t, cap) {
   document.getAnimations().forEach(a => { a.currentTime = t * 1000; });
   counters.forEach(({e, st}) => {
