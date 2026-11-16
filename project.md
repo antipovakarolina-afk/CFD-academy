@@ -55,7 +55,10 @@
 Как собирается рилс (конвейер):
 1. Тема от автора → Claude пишет английский текст и рисунки в `reels/<дата-тема>/scenes.py`.
 2. `python3 tools/reel.py reels/<дата-тема>/scenes.py` → голос (Piper, Amy), рисунки (`tools/doodles.py`), субтитры → `output/<дата-тема>.mp4`.
-3. Шрифты: Caveat (от руки), PT Serif (субтитры) — `assets/fonts/`.
+3. Звук: `/root/.local/share/uv/tools/earshot/bin/python tools/sound.py reels/<дата-тема>/scenes.py` → `output/<дата-тема>-sound.mp4`
+   (мягкий «плоп» на каждой смене картинки, звоночек + бас на годах, колокольчик в конце, тихая калимба под голосом, громкость −14 LUFS).
+   Проверка: `earshot critique output/<дата-тема>-sound.mp4` (цель — «launch-grade»).
+4. Шрифты: Caveat (от руки), PT Serif (субтитры) — `assets/fonts/`.
 
 _Пока выбрано для пробы: голос Amy, рисунки делает Claude. Ещё не решено: про что канал (только трейдинг или любые темы)._
 
