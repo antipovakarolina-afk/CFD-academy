@@ -264,3 +264,78 @@ def me(x=500, y=620, s=1.0, pose="phone", mood="smile",
         + arms
     )
     return g(x, y, s, body)
+
+
+# ---------- зима и ёлка ----------
+def xtree(x=500, y=560, s=1.0, star_col="#ffd23f", balls=True, lights=False, face=None, red_star=False):
+    import math
+    tiers = ('<path class="ln" style="fill:#2e9d5b" d="M0 -300 L-110 -120 H110 Z"/>'
+             '<path class="ln" style="fill:#25894f" d="M0 -200 L-160 20 H160 Z"/>'
+             '<path class="ln" style="fill:#1f7a45" d="M0 -80 L-210 170 H210 Z"/>'
+             '<rect class="ln" x="-30" y="170" width="60" height="70" style="fill:#8a5a3b"/>')
+    deco = ""
+    if balls:
+        cols = ["#e63946", "#ffd23f", "#4fa3f7", "#ff8fb1", "#b79bff", "#f08a00"]
+        pts = [(-50, -150), (40, -170), (-90, -20), (10, -40), (90, 0), (-140, 130), (-40, 100), (60, 120), (150, 140)]
+        deco += "".join(f'<circle class="ln" cx="{px}" cy="{py}" r="18" style="fill:{cols[i % 6]};stroke-width:5"/>'
+                        for i, (px, py) in enumerate(pts))
+    if lights:
+        deco += '<path class="ln" style="stroke:#7a5a2a;stroke-width:4" d="M-95 -140 Q0 -100 95 -140 M-140 0 Q0 50 140 0 M-185 120 Q0 180 185 120"/>'
+        bulbs = [(-60, -126), (0, -118), (60, -126), (-100, 16), (-35, 34), (35, 34), (100, 16),
+                 (-140, 142), (-70, 160), (0, 166), (70, 160), (140, 142)]
+        bc = ["#ffd23f", "#ff5a6e", "#7fd3ff", "#9cff8f"]
+        deco += "".join(f'<circle cx="{bx}" cy="{by}" r="11" style="fill:{bc[i % 4]}"/>' for i, (bx, by) in enumerate(bulbs))
+    if face:
+        deco += planet(0, -40, 1, "#000")[:0]  # (оставлено для единообразия)
+        deco += ('<circle cx="-40" cy="40" r="9" style="fill:#111"/><circle cx="40" cy="40" r="9" style="fill:#111"/>'
+                 + {"smile": '<path class="ln" d="M-30 70 q30 26 60 0"/>',
+                    "angry": '<path class="ln" d="M-30 85 q30 -22 60 0"/><path class="ln" d="M-60 18 l35 12 M60 18 l-35 12"/>',
+                    "o": '<circle class="ln" cx="0" cy="78" r="12"/>'}[face])
+    pts = [(0, -360 + 50 * math.sin(i * math.pi / 5 + math.pi / 2) * 0 - 50 * (1 if i % 2 == 0 else 0.45) * math.cos(i * math.pi / 5)) for i in range(10)]
+    star = " ".join(f"{(50 if i % 2 == 0 else 22) * math.sin(i * math.pi / 5):.0f},{-360 - (50 if i % 2 == 0 else 22) * math.cos(i * math.pi / 5):.0f}"
+                    for i in range(10))
+    sc = "#e63946" if red_star else star_col
+    return g(x, y, s, tiers + deco + f'<polygon class="ln" points="{star}" style="fill:{sc};stroke-width:5"/>')
+
+
+def branch(x, y, s=1.0, r=0):
+    needles = "".join(f'<path class="ln" style="stroke:#2e9d5b;stroke-width:6" d="M{i * 30} 0 l18 -28 M{i * 30} 0 l18 28"/>' for i in range(8))
+    return g(x, y, s, f'<g transform="rotate({r})"><path class="ln" style="stroke:#7a4a2a;stroke-width:9" d="M-10 0 H250"/>{needles}</g>')
+
+
+def snow(n=26, seed=3, color="#ffffff", area=(40, 40, 960, 960)):
+    import random
+    rnd = random.Random(seed)
+    out = ""
+    for _ in range(n):
+        x, y, r = rnd.uniform(area[0], area[2]), rnd.uniform(area[1], area[3]), rnd.uniform(5, 13)
+        out += f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{r:.0f}" style="fill:{color};opacity:.85"/>'
+    return out
+
+
+def mandarin(x, y, s=1.0):
+    return g(x, y, s, '<circle class="ln" cx="0" cy="0" r="55" style="fill:#ff9f1c"/>'
+                      '<path class="ln" style="fill:#2e9d5b;stroke-width:5" d="M0 -55 q20 -30 45 -20 q-20 25 -45 20z"/>'
+                      '<circle cx="-18" cy="-15" r="6" style="fill:#ffd08a"/>')
+
+
+def bulb(x, y, s=1.0, color="#ffd23f"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M-45 -10 a45 45 0 1 1 90 0 q0 30 -22 50 h-46 q-22 -20 -22 -50z"/>'
+                      '<rect class="ln" x="-24" y="40" width="48" height="36" rx="6" style="fill:#b0b0b0"/>'
+                      '<path class="ln" style="stroke:#f08a00;stroke-width:5" d="M-80 -60 l-25 -20 M80 -60 l25 -20 M0 -85 v-30"/>')
+
+
+def crown(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#ffd23f" d="M-90 0 L-70 -80 L-30 -30 L0 -100 L30 -30 L70 -80 L90 0 Z"/>'
+                      '<circle cx="0" cy="-30" r="10" style="fill:#e63946"/>')
+
+
+def tinsel(x, y, s=1.0):
+    strands = "".join(f'<path class="ln" style="stroke:#c9ced6;stroke-width:5" d="M{i * 14 - 100} 0 q{6 if i % 2 else -6} 60 0 {120 + (i % 3) * 20}"/>' for i in range(15))
+    return g(x, y, s, '<path class="ln" style="stroke:#9aa1ab;stroke-width:8" d="M-110 0 H110"/>' + strands)
+
+
+def clock12(x, y, s=1.0):
+    return g(x, y, s, '<circle class="ln" cx="0" cy="0" r="90" style="fill:#fff"/>'
+                      '<path class="ln" d="M0 0 V-62 M0 0 V-45" style="stroke-width:9"/>'
+                      + "".join(f'<circle cx="{75 * __import__("math").sin(i * 0.5236):.0f}" cy="{-75 * __import__("math").cos(i * 0.5236):.0f}" r="5" style="fill:#111"/>' for i in range(12)))
