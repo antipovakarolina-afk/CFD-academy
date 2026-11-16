@@ -76,3 +76,38 @@ def calendar(x=500, y=500, cell=110, cols=6, rows=4, nums=True, open_=()):
 
 def qmarks(x, y, n=3):
     return "".join(hand("?", x + i * 70, y - (i % 2) * 40, 120, rot=(-15 + i * 15)) for i in range(n))
+
+
+def door(x=500, y=520, s=1.0, lines=0):
+    tally = "".join(f'<path class="ln" style="stroke:#888;stroke-width:6" d="M{-110 + i * 22} -150 v70"/>' for i in range(lines))
+    return g(x, y, s, '<rect class="ln" x="-170" y="-330" width="340" height="660" rx="6" style="fill:#f3e3c8"/>'
+                      '<rect class="ln" x="-120" y="-280" width="240" height="250" style="stroke-width:5"/>'
+                      '<rect class="ln" x="-120" y="20" width="240" height="250" style="stroke-width:5"/>'
+                      '<circle class="ln" cx="125" cy="0" r="14" style="fill:#111"/>' + tally)
+
+
+def candle(x=500, y=560, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="-50" y="-120" width="100" height="300" style="fill:#fff"/>'
+                      '<path class="ln" d="M0 -120 v-30"/>'
+                      '<path class="ln" style="fill:#ffcf4a" d="M0 -230 q40 50 0 80 q-40 -30 0 -80z"/>'
+                      '<path class="ln" d="M-120 180 h240"/>')
+
+
+def cookie(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#f0d39b;stroke-width:5" d="M-30 0 q0 -25 30 -25 q30 0 30 25 q0 25 -30 25 q-30 0 -30 -25z"/>')
+
+
+def newspaper(x=500, y=520, s=1.0, title="NEWS"):
+    rows = "".join(f'<path class="ln" style="stroke-width:5" d="M60 {-60 + i * 50} h170"/>' for i in range(6))
+    return g(x, y, s, '<rect class="ln" x="-260" y="-260" width="520" height="560" style="fill:#fff"/>'
+                      f'<text class="hand" x="0" y="-170" font-size="90" text-anchor="middle">{title}</text>'
+                      '<rect class="ln" x="-220" y="-100" width="250" height="230" style="fill:#e9e9e9;stroke-width:5"/>'
+                      '<circle class="ln" cx="-150" cy="0" r="25"/><circle class="ln" cx="-60" cy="10" r="20"/>'
+                      '<rect class="ln" x="-120" y="50" width="70" height="50" style="fill:#ffe7a3;stroke-width:5"/>'
+                      + rows + '<path class="ln" style="stroke-width:5" d="M-220 200 h450 M-220 250 h450"/>')
+
+
+def chocolate(x, y, s=1.0):
+    cells = "".join(f'<rect x="{-60 + c * 60}" y="{-90 + r * 60}" width="56" height="56" rx="6" style="fill:#7b4a2c"/>'
+                    for r in range(3) for c in range(2))
+    return g(x, y, s, '<rect class="ln" x="-70" y="-100" width="140" height="190" rx="10" style="fill:#5a3420"/>' + cells)
