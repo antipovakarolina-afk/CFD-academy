@@ -46,6 +46,50 @@ def add(buf, y, t, gain_db=0.0, pan=0.0):
     buf[i:i + n] += y[:n] * g * lr
 
 
+NOTE = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
+
+
+def hz(n):
+    return 440.0 * 2 ** ((NOTE[n[0]] + 12 * (int(n[-1]) + 1) - 69) / 12)
+
+
+def pad_note(f, dur, detune=0.006, bright=5):
+    t = np.arange(int(dur * SR)) / SR
+    y = np.zeros((len(t), 2), np.float32)
+    for ch, d in enumerate((-detune, detune)):
+        for k in range(1, bright + 1):
+            y[:, ch] += np.sin(2 * np.pi * f * (1 + d) * k * t + k) / k ** 1.6
+    env = np.minimum(1, t / 0.9) * np.minimum(1, (dur - t) / 1.2).clip(0, 1)
+    return (y * env[:, None] * 0.25).astype(np.float32)
+
+
+def dark_music(total):
+    """тёмный синтезаторный фон: Am – F – C – G, мягкий бас и тихий пульс"""
+    bpm = 92
+    bar = 4 * 60 / bpm
+    prog = [("A2", "A3", "C4", "E4"), ("F2", "F3", "A3", "C4"), ("C3", "G3", "C4", "E4"), ("G2", "G3", "B3", "D4")]
+    n = int((total + 3) * SR)
+    m = np.zeros((n, 2), np.float32)
+    t, k = 0.0, 0
+    while t < total + 1:
+        ch = prog[k % 4]
+        for j, note in enumerate(ch):
+            y = pad_note(hz(note), 2 * bar + 1.0, bright=2 if j == 0 else 5)
+            add(m, y, t, -6 if j == 0 else -12)
+        t += 2 * bar
+        k += 1
+    kick = render("cut_hit/kick", seed=0, pitch="A1")
+    tick = render("hover_tick/air", seed=0)
+    beat = 60 / bpm
+    b, i = 4 * bar, 0                      # пульс вступает после первого такта
+    while b < total:
+        add(m, kick[0], b - kick[1]["onset_s"], -20)
+        add(m, tick[0], b + beat / 2 - tick[1]["onset_s"], -30, pan=(-0.4, 0.4)[i % 2])
+        b += beat
+        i += 1
+    return m
+
+
 def scene_starts(work):
     sc = json.loads((work / "scenes.json").read_text())
     return [x["start"] for x in sc], sc[-1]["start"] + sc[-1]["dur"]
@@ -64,12 +108,15 @@ def main(spec):
     music = np.zeros((n, 2), np.float32)
     sfx = np.zeros((n, 2), np.float32)
 
-    # музыка: арпеджио калимбы, по 4 удара на аккорд
+    dark = bool(re.search(r'^MUSIC\s*=\s*"dark"', spec.read_text(), re.M))
+    # музыка: арпеджио калимбы, по 4 удара на аккорд (или тёмный синт-фон)
+    if dark:
+        music = dark_music(total)[:n] * 10 ** (-8 / 20)
     beat = 60 / BPM
     cache = {}
     k = 0
     t = 0.0
-    while t < total + 0.5:
+    while not dark and t < total + 0.5:
         chord = CHORDS[(k // 4) % len(CHORDS)]
         for j, note in enumerate((chord[0], chord[2], chord[1], chord[3]) if k % 2 else chord[:2]):
             key = (note, (k + j) % 3)
@@ -86,11 +133,23 @@ def main(spec):
     music[end:] = 0
 
     # эффекты на сменах картинок
+    if dark:
+        whoosh = [render("fit/whoosh.short/bamboo_swish", seed=s_) for s_ in range(3)]
+        blip = [render("ui_pop/soft", seed=s_) for s_ in range(3)]
+        ding = render("notify/m0", seed=0, pitch="A4")
+        for i, t in enumerate(starts):
+            if i > 0:
+                y, m = whoosh[i % 3]
+                add(sfx, y, t - m["peak_s"], -12, pan=(-0.3, 0.3)[i % 2])
+            y, m = blip[i % 3]
+            add(sfx, y, t + 0.35 - m["onset_s"], -16)
+        y, m = ding
+        add(sfx, y, starts[-1] + 0.6 - m["onset_s"], -14)
     pop = [render("fit/pop/mouth_plop", seed=s) for s in range(4)]
     bell = [render("mallet/celesta", seed=s, pitch="C6") for s in range(2)]
     ding = render("notify/m0", seed=0, pitch="C5")
     thump = render("pro_pop_in/deep", seed=0)
-    for i, t in enumerate(starts):
+    for i, t in enumerate(starts if not dark else []):
         if i == len(starts) - 1:
             y, m = ding
             add(sfx, y, t - m["onset_s"], SFX_DB["end"])
