@@ -322,7 +322,7 @@ def clock12(x, y, s=1.0):
 # ---------- заставка без персонажа ----------
 def intro_search(query="", bg_blob="#cfe0ff"):
     """Начало каждого ролика: «what did I google today?» + телефон с поисковой строкой."""
-    q = (f'<g class="pop"><text class="hand" x="482" y="738" font-size="36" text-anchor="middle">{query}</text></g>'
+    q = (f'<g class="pop"><text class="hand" x="482" y="738" font-size="{min(36, int(560 / max(1, len(query))))}" text-anchor="middle">{query}</text></g>'
          if query else "")
     return (blob(500, 640, 330, bg_blob)
             + hand("what did I", 500, 150, 95) + google_word(500, 290, 170) + hand("today?", 500, 400, 95)
@@ -332,3 +332,74 @@ def intro_search(query="", bg_blob="#cfe0ff"):
             + google_word(500, 640, 90)
             + '<path class="ln" style="stroke:#c9ced6;stroke-width:6" d="M350 810 h300 M350 850 h240 M350 890 h270"/>'
             + q + star(200, 560, 1.2) + star(820, 520, 0.9, "#ff8fb1") + qmarks(760, 850))
+
+
+# ---------- техника, деньги, кафе ----------
+NV_GREEN = "#76b900"
+
+
+def mug(x, y, s=1.0, color="#e63946", face="smile", steam=True):
+    f = {"smile": '<path class="ln" style="stroke-width:5" d="M-18 10 q18 16 36 0"/>',
+         "o": '<circle class="ln" style="stroke-width:5" cx="0" cy="16" r="8"/>',
+         "think": '<path class="ln" style="stroke-width:5" d="M-16 16 h32"/>'}[face]
+    st = ('<path class="ln" style="stroke:#9aa1ab;stroke-width:5" d="M-20 -70 q-10 -20 0 -40 M10 -70 q-10 -20 0 -40"/>'
+          if steam else "")
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M-55 -55 h110 l-10 120 h-90 z"/>'
+                      '<path class="ln" d="M55 -30 q40 0 35 35 q-5 30 -40 25"/>'
+                      '<circle cx="-18" cy="-12" r="6" style="fill:#111"/><circle cx="18" cy="-12" r="6" style="fill:#111"/>'
+                      + f + st)
+
+
+def diner(x=500, y=600, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="-330" y="-260" width="660" height="70" rx="30" style="fill:#e63946"/>'
+                      '<rect class="ln" x="-330" y="-190" width="90" height="330" style="fill:#e63946"/>'
+                      '<rect class="ln" x="240" y="-190" width="90" height="330" style="fill:#e63946"/>'
+                      '<rect class="ln" x="-230" y="20" width="460" height="40" style="fill:#f4e3c1"/>'
+                      '<path class="ln" d="M0 60 v130 M-60 190 h120"/>')
+
+
+def chip(x, y, s=1.0, label="", color=NV_GREEN, mark=None):
+    pins = "".join(f'<path class="ln" style="stroke-width:6" d="M{-75 + i * 30} -100 v-28 M{-75 + i * 30} 100 v28 '
+                   f'M-100 {-75 + i * 30} h-28 M100 {-75 + i * 30} h28"/>' for i in range(6))
+    lab = (f'<text class="hand" x="0" y="22" font-size="{70 if len(label) < 5 else 46}" text-anchor="middle" '
+           f'style="fill:#fff">{label}</text>' if label else "")
+    m = ""
+    if mark is True:
+        m = '<path class="ln" style="stroke:#1f9d55;stroke-width:18" d="M60 120 L100 165 L190 60"/>'
+    elif mark is False:
+        m = '<path class="ln" style="stroke:#d7263d;stroke-width:18" d="M-150 -150 L150 150 M150 -150 L-150 150"/>'
+    return g(x, y, s, pins + f'<rect class="ln" x="-100" y="-100" width="200" height="200" rx="18" style="fill:#2b2d33"/>'
+                             f'<rect x="-70" y="-70" width="140" height="140" rx="10" style="fill:{color}"/>' + lab + m)
+
+
+def moneybag(x, y, s=1.0, text="$"):
+    return g(x, y, s, '<path class="ln" style="fill:#c9a659" d="M-40 -110 h80 l-20 30 q110 60 90 150 q-10 50 -110 50 '
+                      'q-100 0 -110 -50 q-20 -90 90 -150z"/>'
+                      '<path class="ln" style="stroke:#8a6d2b;stroke-width:8" d="M-30 -80 h60"/>'
+                      f'<text class="hand" x="0" y="60" font-size="110" text-anchor="middle" style="fill:#fff">{text}</text>')
+
+
+def screen_cube(x, y, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="-200" y="-140" width="400" height="260" rx="16" style="fill:#2b2d33"/>'
+                      '<path class="ln" d="M-40 160 h80 M0 120 v40"/>'
+                      '<path class="ln" style="fill:#4fa3f7;stroke:#fff;stroke-width:5" d="M0 -90 l70 35 l-70 35 l-70 -35z"/>'
+                      '<path class="ln" style="fill:#2f6fdb;stroke:#fff;stroke-width:5" d="M-70 -55 v70 l70 35 v-70z"/>'
+                      '<path class="ln" style="fill:#7fb0ff;stroke:#fff;stroke-width:5" d="M70 -55 v70 l-70 35 v-70z"/>')
+
+
+def plates(x, y, s=1.0):
+    return g(x, y, s, "".join(f'<ellipse class="ln" cx="0" cy="{-i * 28}" rx="120" ry="28" style="fill:#fff"/>' for i in range(5))
+             + "".join(f'<circle class="ln" cx="{cx}" cy="{cy}" r="{r}" style="fill:#cfe8ff;stroke-width:4"/>'
+                       for cx, cy, r in [(-110, -170, 22), (-60, -210, 14), (90, -190, 26), (130, -240, 12)]))
+
+
+def brain(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#ff9fb3" d="M-120 20 q-40 -80 30 -120 q20 -60 90 -40 q70 -40 110 20 '
+                      'q70 20 40 100 q20 70 -60 80 q-40 40 -100 10 q-80 20 -110 -50z"/>'
+                      '<path class="ln" style="stroke-width:5" d="M0 -130 q-20 60 10 150 M-70 -60 q40 10 50 50 M70 -40 q-40 20 -40 60"/>')
+
+
+def chart_up(x, y, s=1.0, color=NV_GREEN):
+    return g(x, y, s, '<path class="ln" d="M-200 150 H220 M-200 150 V-170"/>'
+                      f'<path class="ln" style="stroke:{color};stroke-width:16" d="M-180 120 L-90 70 L-20 95 L60 -10 L120 10 L200 -150"/>'
+                      f'<path class="ln" style="fill:{color};stroke:{color}" d="M200 -150 l-50 10 l35 40z"/>')
