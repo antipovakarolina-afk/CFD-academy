@@ -403,3 +403,57 @@ def chart_up(x, y, s=1.0, color=NV_GREEN):
     return g(x, y, s, '<path class="ln" d="M-200 150 H220 M-200 150 V-170"/>'
                       f'<path class="ln" style="stroke:{color};stroke-width:16" d="M-180 120 L-90 70 L-20 95 L60 -10 L120 10 L200 -150"/>'
                       f'<path class="ln" style="fill:{color};stroke:{color}" d="M200 -150 l-50 10 l35 40z"/>')
+
+
+# ---------- кубики и прочее ----------
+def cube(x, y, a=80, top="#6cc24a", left="#8b5a2b", right="#6e4520"):
+    h = a * 0.5
+    return (f'<path class="ln" style="fill:{top};stroke-width:5" d="M{x} {y - h} l{a} {h} l{-a} {h} l{-a} {-h}z"/>'
+            f'<path class="ln" style="fill:{left};stroke-width:5" d="M{x - a} {y} l{a} {h} v{a} l{-a} {-h}z"/>'
+            f'<path class="ln" style="fill:{right};stroke-width:5" d="M{x + a} {y} l{-a} {h} v{a} l{a} {-h}z"/>')
+
+
+def pickaxe(x, y, s=1.0, r=-30):
+    return g(x, y, s, f'<g transform="rotate({r})"><path class="ln" style="stroke:#8a5a3b;stroke-width:22" d="M0 -10 V220"/>'
+                      '<path class="ln" style="fill:#9fd8e8" d="M-150 30 Q0 -90 150 30 Q0 -40 -150 30z"/></g>')
+
+
+def pig(x, y, s=1.0, tall=False):
+    sx, sy = (0.6, 1.9) if tall else (1, 1)
+    body = (f'<g transform="scale({sx},{sy})">'
+            '<rect class="ln" x="-120" y="-70" width="240" height="140" rx="40" style="fill:#ffb3c7"/>'
+            '<path class="ln" d="M-80 70 v50 M-30 70 v50 M30 70 v50 M80 70 v50" style="stroke-width:12"/></g>')
+    hx = 0 if tall else 140
+    hy = -150 if tall else -40
+    head = (f'<circle class="ln" cx="{hx}" cy="{hy}" r="60" style="fill:#ffb3c7"/>'
+            f'<ellipse class="ln" cx="{hx}" cy="{hy + 15}" rx="26" ry="18" style="fill:#ff8fb1;stroke-width:5"/>'
+            f'<circle cx="{hx - 8}" cy="{hy + 15}" r="4" style="fill:#111"/><circle cx="{hx + 8}" cy="{hy + 15}" r="4" style="fill:#111"/>'
+            f'<circle cx="{hx - 22}" cy="{hy - 18}" r="7" style="fill:#111"/><circle cx="{hx + 22}" cy="{hy - 18}" r="7" style="fill:#111"/>')
+    return g(x, y, s, body + head)
+
+
+def cat_sleep(x, y, s=1.0, color="#f3a95e"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M-170 60 q0 -130 150 -130 q150 0 150 130 z"/>'
+                      f'<circle class="ln" cx="130" cy="10" r="65" style="fill:{color}"/>'
+                      f'<path class="ln" style="fill:{color}" d="M85 -35 l10 -50 l35 35z M175 -35 l-10 -50 l-35 35z"/>'
+                      '<path class="ln" style="stroke-width:5" d="M100 5 q12 10 22 0 M140 5 q12 10 22 0"/>'
+                      f'<path class="ln" style="stroke:{color};stroke-width:22" d="M-170 50 q-60 -10 -40 -80"/>'
+                      '<text class="hand" x="230" y="-80" font-size="70">z</text><text class="hand" x="270" y="-140" font-size="90">Z</text>')
+
+
+def mic(x, y, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="-40" y="-120" width="80" height="130" rx="40" style="fill:#9aa1ab"/>'
+                      '<path class="ln" d="M-65 -20 q0 80 65 80 q65 0 65 -80 M0 60 v60 M-50 120 h100"/>')
+
+
+def earth(x, y, r=90):
+    return (f'<circle class="ln" cx="{x}" cy="{y}" r="{r}" style="fill:#4fa3f7"/>'
+            f'<path class="ln" style="fill:#5cc06a;stroke-width:5" d="M{x - r * 0.6} {y - r * 0.3} q{r * 0.3} {-r * 0.5} {r * 0.6} {-r * 0.2} '
+            f'q{r * 0.2} {r * 0.4} {-r * 0.1} {r * 0.6} q{-r * 0.4} {r * 0.1} {-r * 0.5} {-r * 0.4}z"/>'
+            f'<path class="ln" style="fill:#5cc06a;stroke-width:5" d="M{x + r * 0.2} {y + r * 0.2} q{r * 0.4} {-r * 0.2} {r * 0.5} {r * 0.2} '
+            f'q{-r * 0.1} {r * 0.4} {-r * 0.4} {r * 0.3}z"/>')
+
+
+def bubble(x, y, w=520, h=200, color="#fff", text="", size=80, cls="hand"):
+    return (f'<path class="ln" style="fill:{color}" d="M{x - w / 2} {y - h / 2} h{w} v{h} h{-w * 0.55} l-60 70 l10 -70 h{-w * 0.45 + 50} z"/>'
+            + hand(text, x, y + size * 0.3, size, cls))
