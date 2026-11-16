@@ -1,0 +1,9 @@
+# Великі медіафайли не кладемо в git
+originals/*
+output/*
+!originals/.gitkeep
+!output/.gitkeep
+*.mp4
+*.mov
+*.mkv
+__pycache__/
