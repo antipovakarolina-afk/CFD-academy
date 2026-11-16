@@ -457,3 +457,67 @@ def earth(x, y, r=90):
 def bubble(x, y, w=520, h=200, color="#fff", text="", size=80, cls="hand"):
     return (f'<path class="ln" style="fill:{color}" d="M{x - w / 2} {y - h / 2} h{w} v{h} h{-w * 0.55} l-60 70 l10 -70 h{-w * 0.45 + 50} z"/>'
             + hand(text, x, y + size * 0.3, size, cls))
+
+
+# ---------- микромир ----------
+def bacterium(x, y, s=1.0, color="#7ed957", r=0, face="smile"):
+    f = {"smile": '<circle cx="-18" cy="-6" r="6" style="fill:#111"/><circle cx="18" cy="-6" r="6" style="fill:#111"/>'
+                  '<path class="ln" style="stroke-width:5" d="M-14 12 q14 12 28 0"/>',
+         "o": '<circle cx="-18" cy="-6" r="6" style="fill:#111"/><circle cx="18" cy="-6" r="6" style="fill:#111"/>'
+              '<circle class="ln" style="stroke-width:5" cx="0" cy="16" r="7"/>',
+         None: ""}[face]
+    return g(x, y, s, f'<g transform="rotate({r})">'
+                      f'<path class="ln" style="stroke-width:5" d="M90 0 q30 -20 50 0 q20 20 45 0"/>'
+                      f'<rect class="ln" x="-95" y="-48" width="190" height="96" rx="48" style="fill:{color}"/>'
+                      f'<circle cx="-50" cy="20" r="8" style="fill:#ffffff;opacity:.5"/><circle cx="45" cy="-22" r="6" style="fill:#ffffff;opacity:.5"/>'
+                      f'</g>{f}')
+
+
+def virus(x, y, r=70, color="#e0457b", face=None):
+    import math
+    spikes = "".join(f'<path class="ln" style="stroke-width:6" d="M{x + r * math.cos(a):.0f} {y + r * math.sin(a):.0f} '
+                     f'L{x + (r + 28) * math.cos(a):.0f} {y + (r + 28) * math.sin(a):.0f}"/>'
+                     f'<circle class="ln" style="fill:{color};stroke-width:5" cx="{x + (r + 34) * math.cos(a):.0f}" cy="{y + (r + 34) * math.sin(a):.0f}" r="10"/>'
+                     for a in [i * math.pi / 6 for i in range(12)])
+    f = ""
+    if face:
+        f = (f'<circle cx="{x - r * 0.3}" cy="{y - r * 0.1}" r="{r * 0.09}" style="fill:#111"/><circle cx="{x + r * 0.3}" cy="{y - r * 0.1}" r="{r * 0.09}" style="fill:#111"/>'
+             + (f'<path class="ln" style="stroke-width:5" d="M{x - r * 0.3} {y + r * 0.3} l{r * 0.15} {-r * 0.12} l{r * 0.15} {r * 0.12} l{r * 0.15} {-r * 0.12} l{r * 0.15} {r * 0.12}"/>'
+                if face == "evil" else f'<path class="ln" style="stroke-width:5" d="M{x - r * 0.25} {y + r * 0.25} q{r * 0.25} {r * 0.25} {r * 0.5} 0"/>'))
+    return spikes + f'<circle class="ln" cx="{x}" cy="{y}" r="{r}" style="fill:{color}"/>' + f
+
+
+def phage(x, y, s=1.0, color="#7b3fe4"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M0 -150 l55 32 v64 l-55 32 l-55 -32 v-64z"/>'
+                      '<rect class="ln" x="-14" y="-22" width="28" height="120" style="fill:#c9ced6"/>'
+                      '<path class="ln" style="stroke-width:6" d="M-14 98 l-60 50 l-20 50 M14 98 l60 50 l20 50 M-6 98 l-25 70 M6 98 l25 70"/>'
+                      '<circle cx="-18" cy="-90" r="7" style="fill:#fff"/><circle cx="18" cy="-90" r="7" style="fill:#fff"/>'
+                      '<circle cx="-18" cy="-90" r="3.5" style="fill:#111"/><circle cx="18" cy="-90" r="3.5" style="fill:#111"/>')
+
+
+def dna(x, y, s=1.0, a="#4fa3f7", b="#ff8fb1", hl=()):
+    import math
+    out = ""
+    for i in range(14):
+        yy = -260 + i * 40
+        dx = 90 * math.sin(i * 0.55)
+        col = "#ffd23f" if i in hl else "#c9ced6"
+        out += f'<path class="ln" style="stroke:{col};stroke-width:10" d="M{-dx:.0f} {yy} L{dx:.0f} {yy}"/>'
+    p1 = " ".join(f"{90 * math.sin(i * 0.55):.0f},{-260 + i * 40}" for i in range(14))
+    p2 = " ".join(f"{-90 * math.sin(i * 0.55):.0f},{-260 + i * 40}" for i in range(14))
+    out += f'<polyline class="ln" points="{p1}" style="stroke:{a};stroke-width:14"/><polyline class="ln" points="{p2}" style="stroke:{b};stroke-width:14"/>'
+    return g(x, y, s, out)
+
+
+def petri(x, y, s=1.0):
+    return g(x, y, s, '<ellipse class="ln" cx="0" cy="0" rx="230" ry="90" style="fill:#f3f7ea"/>'
+                      '<path class="ln" style="fill:#c7e6a3;stroke-width:5" d="M-60 -20 q30 -40 70 -10 q40 10 20 40 q-40 30 -80 10 q-30 -15 -10 -40z"/>'
+                      '<circle cx="-120" cy="10" r="14" style="fill:#e8d27a"/><circle cx="110" cy="-20" r="10" style="fill:#e8d27a"/>'
+                      '<circle cx="130" cy="30" r="8" style="fill:#e8d27a"/>'
+                      '<ellipse class="ln" cx="0" cy="25" rx="230" ry="90" style="stroke-width:5"/>')
+
+
+def balance(x, y, s=1.0, left="", right=""):
+    return g(x, y, s, '<path class="ln" d="M0 -150 V150 M-120 150 h240 M-260 -120 H260" style="stroke-width:10"/>'
+                      '<path class="ln" d="M-220 -120 l-60 120 h120 z M220 -120 l-60 120 h120 z" style="fill:#fff;stroke-width:6"/>'
+                      + left + right)
