@@ -56,7 +56,7 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 
 JS = """
 THREE.ColorManagement.legacyMode = false;
-let R, S, C, objs = [], snows = [];
+let R, S, C, objs = [], snows = [], labsAnim = [], bubAnim = null;
 function easeBack(k) { const c = 1.7; k = Math.min(1, Math.max(0, k)); return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); }
 function setup(def) {
   R = new THREE.WebGLRenderer({canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true});
@@ -82,12 +82,10 @@ function setup(def) {
     const e = document.createElement('div'); e.className = 'lab';
     e.style.left = l.x + 'px'; e.style.top = l.y + 'px'; e.style.fontSize = l.size + 'px'; e.style.color = l.color;
     e.innerHTML = l.html; labs.appendChild(e);
-    const base = `translate(-50%, -75%) rotate(${l.rot}deg)`;
-    e.animate([{opacity: 0, transform: base + ' scale(.3)'}, {opacity: 1, transform: base + ' scale(1.12)', offset: .7}, {opacity: 1, transform: base + ' scale(1)'}],
-      {duration: 450, delay: (0.35 + i * 0.25) * 1000, fill: 'both', easing: 'ease-out'});
+    labsAnim.push({e, st: 0.35 + i * 0.25, rot: l.rot});
   });
   if (def.bubble) { const b = document.createElement('div'); b.className = 'bub'; b.style.top = '290px'; b.textContent = def.bubble; labs.appendChild(b);
-    b.animate([{opacity: 0, transform: 'scale(.6)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 400, delay: 150, fill: 'both', easing: 'ease-out'}); }
+    bubAnim = b; }
 }
 function frame(t, cap) {
   objs.forEach(({g, o, st, i}) => {
@@ -99,7 +97,14 @@ function frame(t, cap) {
   });
   snows.forEach(({m, y0}) => { let y = y0 - t * m.userData.snow; y = ((y + 2.5) % 5 + 5) % 5 - 2.5; m.position.y = y; });
   C.position.x = 0.12 * Math.sin(t * 0.35); C.lookAt(0, 0, 0);
-  document.getAnimations().forEach(a => { a.currentTime = t * 1000; });
+  // надписи: появление с пружинкой, считаем вручную (детерминированно)
+  labsAnim.forEach(({e, st, rot}) => {
+    const k = Math.min(1, Math.max(0, (t - st) / 0.45));
+    const sc = k < 0.7 ? 0.3 + (1.12 - 0.3) * (k / 0.7) : 1.12 - 0.12 * ((k - 0.7) / 0.3);
+    e.style.opacity = Math.min(1, k / 0.7);
+    e.style.transform = `translate(-50%, -75%) rotate(${rot}deg) scale(${sc})`;
+  });
+  if (bubAnim) { const k = Math.min(1, Math.max(0, (t - 0.15) / 0.4)); bubAnim.style.opacity = k; bubAnim.style.transform = `scale(${0.6 + 0.4 * k})`; }
   document.getElementById('cap').innerHTML = cap;
   R.render(S, C);
 }
