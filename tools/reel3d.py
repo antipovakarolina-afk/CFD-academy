@@ -56,26 +56,28 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 
 JS = """
 THREE.ColorManagement.legacyMode = false;
-let R, S, C, objs = [], snows = [], labsAnim = [], bubAnim = null;
+let R, S, C, objs = [], snows = [], labsAnim = [], bubAnim = null, floats = [], wings = [];
 function easeBack(k) { const c = 1.7; k = Math.min(1, Math.max(0, k)); return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); }
 function setup(def) {
   R = new THREE.WebGLRenderer({canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true});
   R.setPixelRatio(1); R.setSize(1080, 1920, false); R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
   R.outputEncoding = THREE.sRGBEncoding;
   S = new THREE.Scene(); S.background = new THREE.Color(def.bg);
+  if (def.fog) S.fog = new THREE.Fog(def.bg, def.fog[0], def.fog[1]);
   C = new THREE.PerspectiveCamera(32, 1080 / 1920, 0.1, 100); C.position.set(0, 0.5, 11); C.lookAt(0, 0, 0);
   S.add(new THREE.HemisphereLight(0xffffff, 0x9aa4c0, def.dark ? 0.7 : 1.0));
   const d = new THREE.DirectionalLight(0xffffff, def.dark ? 0.8 : 1.1); d.position.set(-2, 4, 10); d.castShadow = true;
   d.shadow.mapSize.set(1024, 1024); d.shadow.radius = 6; const sc = d.shadow.camera; sc.left = -5; sc.right = 5; sc.top = 6; sc.bottom = -6; sc.far = 30;
   S.add(d);
   const back = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({opacity: def.dark ? 0.18 : 0.13}));
-  back.position.z = -0.9; back.receiveShadow = true; S.add(back);
+  back.position.z = -0.9; back.receiveShadow = true; if (!def.fog) S.add(back);
+  if (def.moonlight) { const ml = new THREE.PointLight(def.moonlight, 1.2, 30); ml.position.set(2, 4, 4); S.add(ml); }
   const n = def.objs.length;
   def.objs.forEach((o, i) => {
     const g = Models[o.m](...o.a); g.position.set(...o.p); g.rotation.set(...o.r);
     const st = g.userData.noPop ? 0 : 0.15 + (n > 1 ? i / (n - 1) * 0.9 : 0);
     S.add(g); objs.push({g, o, st, i});
-    g.traverse(m => { if (m.userData && m.userData.snow) snows.push({m, y0: m.position.y}); });
+    g.traverse(m => { if (m.userData && m.userData.snow) snows.push({m, y0: m.position.y}); if (m.userData && m.userData.float) floats.push(m); if (m.userData && m.userData.wing) wings.push(m); });
   });
   const labs = document.getElementById('labs');
   def.labels.forEach((l, i) => {
@@ -91,11 +93,14 @@ function frame(t, cap) {
   objs.forEach(({g, o, st, i}) => {
     const k = easeBack((t - st) / 0.55);
     g.scale.setScalar(o.s * Math.max(k, 0.0001));
-    g.rotation.y = o.r[1] + 0.28 * o.spin * Math.sin(t * 0.8 + i * 1.3);
-    g.position.y = o.p[1] + 0.05 * Math.sin(t * 1.6 + i);
+    if (!g.userData.noPop) { g.rotation.y = o.r[1] + 0.28 * o.spin * Math.sin(t * 0.8 + i * 1.3);
+    g.position.y = o.p[1] + 0.05 * Math.sin(t * 1.6 + i); }
     g.traverse(m => { if (m.userData && m.userData.flame) { if (m.userData.sy === undefined) m.userData.sy = m.scale.y; m.scale.y = m.userData.sy * (1 + 0.12 * Math.sin(t * 17 + i * 3) + 0.06 * Math.sin(t * 31)); } });
   });
   snows.forEach(({m, y0}) => { let y = y0 - t * m.userData.snow; y = ((y + 2.5) % 5 + 5) % 5 - 2.5; m.position.y = y; });
+  floats.forEach(m => { const f = m.userData.float; m.position.x = f.x + f.a * Math.sin(t * 0.9 + f.p); m.position.y = f.y + f.a * Math.sin(t * 1.3 + f.p * 2);
+    m.scale.setScalar(0.75 + 0.35 * Math.sin(t * 3 + f.p * 5)); });
+  wings.forEach(w => { w.rotation.x = 0.5 * Math.sin(t * 14); });
   C.position.x = 0.12 * Math.sin(t * 0.35); C.lookAt(0, 0, 0);
   // надписи: появление с пружинкой, считаем вручную (детерминированно)
   labsAnim.forEach(({e, st, rot}) => {
@@ -150,15 +155,19 @@ def main(spec_path):
             if page:
                 page.close()
             page = br.new_page(viewport={"width": W, "height": H})   # новая вкладка — чистая сцена
-            a, sr = tts.create(sc["text"], voice=voice, speed=speed, lang="en-us")
+            if getattr(mod, "NO_VOICE", False):
+                sr = 24000
+                a = np.zeros(int(sr * sc.get("dur", 4.0)), np.float32)
+            else:
+                a, sr = tts.create(sc["text"], voice=voice, speed=speed, lang="en-us")
             a = np.concatenate([a, np.zeros(int(sr * PAUSE), np.float32)])
             audio.append(a)
             dur = len(a) / sr
             scenes.append({"start": round(t0, 3), "dur": round(dur, 3)})
             t0 += dur
-            parts = chunks(sc["text"])
-            tot = sum(len(c) for c in parts)
-            bounds = np.cumsum([dur * len(c) / tot for c in parts])
+            parts = [""] if getattr(mod, "NO_VOICE", False) else chunks(sc["text"])
+            tot = max(1, sum(len(c) for c in parts))
+            bounds = np.cumsum([dur * max(1, len(c)) / max(1, sum(max(1, len(x)) for x in parts)) for c in parts])
             bg = sc.get("bg", "#fff")
             h = bg.lstrip("#")
             dark = 0.299 * int(h[0:2], 16) + 0.587 * int(h[2:4], 16) + 0.114 * int(h[4:6], 16) < 110
@@ -168,7 +177,7 @@ def main(spec_path):
             page.add_script_tag(content=models)
             page.add_script_tag(content=JS)
             page.evaluate("Promise.all([document.fonts.load('bold 100px Hand'), document.fonts.load('44px Cap')])")
-            page.evaluate("def => setup(def)", dict(bg=bg, dark=dark, objs=sc["objs"], labels=labels, bubble=sc.get("bubble")))
+            page.evaluate("def => setup(def)", dict(bg=bg, dark=dark, objs=sc["objs"], labels=labels, bubble=sc.get("bubble"), fog=sc.get("fog"), moonlight=sc.get("moonlight")))
             nf = int(round(dur * FPS))
             for k in range(nf):
                 t = k / FPS
