@@ -751,3 +751,47 @@ def drops(x, y, s=1.0, n=7, color="#4fa3f7"):
     r = random.Random(3)
     return "".join(g(x + r.uniform(-200, 200) * s, y + r.uniform(-150, 150) * s, 0.5 * s,
                      f'<path class="ln" style="fill:{color};stroke-width:5" d="M0 -40 q35 45 0 70 q-35 -25 0 -70z"/>') for _ in range(n))
+
+
+# ---------- история подарков ----------
+def fireplace(x, y, s=1.0):
+    return g(x, y, s, '<rect class="ln" x="-300" y="-260" width="600" height="60" rx="10" style="fill:#b5653a"/>'
+                      '<rect class="ln" x="-260" y="-200" width="520" height="330" style="fill:#c97b4a"/>'
+                      '<path class="ln" style="fill:#2b2230" d="M-150 130 v-170 q150 -110 300 0 v170z"/>'
+                      '<path class="ln" style="fill:#ff8c2b" d="M-70 130 q-20 -80 30 -120 q0 50 30 60 q10 -60 50 -90 q40 70 20 150z"/>'
+                      '<path class="ln" style="fill:#ffd23f;stroke-width:4" d="M-30 130 q-5 -40 20 -60 q20 30 30 60z"/>'
+                      '<path class="ln" style="stroke:#8a4a2a;stroke-width:4" d="M-260 -120 h520 M-260 -40 h110 M150 -40 h110 M-260 40 h110 M150 40 h110"/>')
+
+
+def coin(x, y, s=1.0):
+    return g(x, y, s, '<circle class="ln" cx="0" cy="0" r="38" style="fill:#ffd23f"/><circle class="ln" cx="0" cy="0" r="24" style="stroke:#e0a800;stroke-width:4"/>')
+
+
+def gold_bag(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#c9a659" d="M-40 -110 h80 l-20 30 q110 60 90 150 q-10 50 -110 50 q-100 0 -110 -50 q-20 -90 90 -150z"/>'
+                      '<path class="ln" style="stroke:#8a6d2b;stroke-width:8" d="M-30 -80 h60"/>') + coin(x + 70 * s, y + 110 * s, 0.7 * s) + coin(x - 80 * s, y + 120 * s, 0.6 * s)
+
+
+def figurine(x, y, s=1.0, color="#c98b5a"):
+    return g(x, y, s, f'<circle class="ln" cx="0" cy="-90" r="34" style="fill:{color}"/>'
+                      f'<path class="ln" style="fill:{color}" d="M-45 -50 h90 l25 150 h-140z"/>'
+                      '<circle cx="-12" cy="-94" r="5" style="fill:#111"/><circle cx="12" cy="-94" r="5" style="fill:#111"/>')
+
+
+def scroll(x, y, s=1.0, lines=5):
+    ls = "".join(f'<path class="ln" style="stroke:#9a8a6a;stroke-width:5" d="M-140 {-120 + i * 55} h{280 - (i % 2) * 70}"/>' for i in range(lines))
+    return g(x, y, s, '<rect class="ln" x="-180" y="-200" width="360" height="400" style="fill:#fff4d6"/>'
+                      '<rect class="ln" x="-200" y="-230" width="400" height="50" rx="25" style="fill:#e8d2a8"/>'
+                      '<rect class="ln" x="-200" y="180" width="400" height="50" rx="25" style="fill:#e8d2a8"/>' + ls)
+
+
+def paper_roll(x, y, s=1.0, color="#e63946", dots="#ffd23f"):
+    pat = "".join(f'<circle cx="{-120 + (i % 6) * 48}" cy="{-50 + (i // 6) * 50}" r="9" style="fill:{dots}"/>' for i in range(18))
+    return g(x, y, s, f'<rect class="ln" x="-160" y="-90" width="320" height="180" style="fill:{color}"/>' + pat
+                      + f'<ellipse class="ln" cx="-160" cy="0" rx="40" ry="90" style="fill:{color}"/>'
+                      '<ellipse class="ln" cx="-160" cy="0" rx="14" ry="34" style="fill:#fff"/>'
+                      f'<path class="ln" style="fill:{color}" d="M160 -90 l180 40 v180 l-180 -40z"/>')
+
+
+def heart(x, y, s=1.0, color="#e0457b"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M0 80 C-160 -20 -110 -150 0 -80 C110 -150 160 -20 0 80z"/>')
