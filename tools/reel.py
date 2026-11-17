@@ -132,16 +132,20 @@ def main(spec_path: str) -> None:
         page = p.chromium.launch(executable_path="/opt/pw-browsers/chromium",
                                  args=["--no-sandbox"]).new_page(viewport={"width": W, "height": H})
         for i, sc in enumerate(mod.SCENES):
-            a, sr = tts.create(sc["text"], voice=voice, speed=speed, lang=lang)
+            if getattr(mod, "NO_VOICE", False):           # без голоса: тишина заданной длины, без субтитров
+                sr = 24000
+                a = np.zeros(int(sr * sc.get("dur", 4.0)), np.float32)
+            else:
+                a, sr = tts.create(sc["text"], voice=voice, speed=speed, lang=lang)
             a = np.concatenate([a, np.zeros(int(sr * PAUSE), np.float32)])
             audio.append(a)
             dur = len(a) / sr
             scenes.append({"start": round(t0, 3), "dur": round(dur, 3)})
             t0 += dur
 
-            parts = chunks(sc["text"])
-            total = sum(len(c) for c in parts)
-            bounds = np.cumsum([dur * len(c) / total for c in parts])
+            parts = [""] if getattr(mod, "NO_VOICE", False) else chunks(sc["text"])
+            total = max(1, sum(len(c) for c in parts))
+            bounds = np.cumsum([dur * max(1, len(c)) / max(1, sum(max(1, len(x)) for x in parts)) for c in parts])
 
             def cap_at(t):
                 return int(min(np.searchsorted(bounds, t, side="right"), len(parts) - 1))

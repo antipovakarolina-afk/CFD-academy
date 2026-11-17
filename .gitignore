@@ -10,3 +10,4 @@ __pycache__/
 assets/voices/*.onnx
 output/.work-*/
 assets/voices/kokoro/
+personal/
