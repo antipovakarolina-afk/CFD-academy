@@ -38,8 +38,8 @@ def O(model, bx, by, s=1.0, args=(), r=(0, 0, 0), spin=1.0, z=0.0):
     return dict(m=model, a=list(args), p=[x, y, z], s=s, r=list(r), spin=spin)
 
 
-def L(text, bx, by, size=110, color="#111", rot=0, google=False):
-    return dict(t=text, x=40 + bx, y=480 + by, size=size, color=color, rot=rot, google=google)
+def L(text, bx, by, size=110, color="#111", rot=0, google=False, d=None):
+    return dict(t=text, x=40 + bx, y=480 + by, size=size, color=color, rot=rot, google=google, d=d)
 
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>
@@ -48,7 +48,7 @@ PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:%(bg)s}
 canvas{position:absolute;inset:0;width:1080px;height:1920px}
 #cap{position:absolute;top:300px;left:90px;right:90px;text-align:center;font:44px/1.25 Cap,serif;color:%(capc)s}
-.lab{position:absolute;font-family:Hand;font-weight:700;white-space:nowrap;transform-origin:center}
+.lab{position:absolute;font-family:Hand;font-weight:700;white-space:nowrap;transform-origin:center;-webkit-text-stroke:5px #2a1f5c;paint-order:stroke fill}
 .bub{position:absolute;left:140px;top:690px;width:800px;height:220px;background:#fff;border:7px solid #111;border-radius:12px;
  display:flex;align-items:center;justify-content:center;font:700 80px Hand;color:#7b3fe4}
 .bub:after{content:'';position:absolute;left:330px;bottom:-62px;border:30px solid transparent;border-top:34px solid #111}
@@ -84,7 +84,7 @@ function setup(def) {
     const e = document.createElement('div'); e.className = 'lab';
     e.style.left = l.x + 'px'; e.style.top = l.y + 'px'; e.style.fontSize = l.size + 'px'; e.style.color = l.color;
     e.innerHTML = l.html; labs.appendChild(e);
-    labsAnim.push({e, st: 0.35 + i * 0.25, rot: l.rot});
+    labsAnim.push({e, st: (l.d === null || l.d === undefined) ? 0.35 + i * 0.25 : l.d, rot: l.rot});
   });
   if (def.bubble) { const b = document.createElement('div'); b.className = 'bub'; b.style.top = '290px'; b.textContent = def.bubble; labs.appendChild(b);
     bubAnim = b; }
@@ -99,8 +99,9 @@ function frame(t, cap) {
   });
   snows.forEach(({m, y0}) => { let y = y0 - t * m.userData.snow; y = ((y + 2.5) % 5 + 5) % 5 - 2.5; m.position.y = y; });
   floats.forEach(m => { const f = m.userData.float; m.position.x = f.x + f.a * Math.sin(t * 0.9 + f.p); m.position.y = f.y + f.a * Math.sin(t * 1.3 + f.p * 2);
-    m.scale.setScalar(0.75 + 0.35 * Math.sin(t * 3 + f.p * 5)); });
+    if (f.s === undefined) f.s = m.scale.x; m.scale.setScalar(f.s * (0.75 + 0.35 * Math.sin(t * 3 + f.p * 5))); });
   wings.forEach(w => { w.rotation.x = 0.5 * Math.sin(t * 14); });
+  objs.forEach(({g}) => { if (g.userData.spinY) g.rotation.y = t * g.userData.spinY; });
   C.position.x = 0.12 * Math.sin(t * 0.35); C.lookAt(0, 0, 0);
   // надписи: появление с пружинкой, считаем вручную (детерминированно)
   labsAnim.forEach(({e, st, rot}) => {
@@ -160,7 +161,7 @@ def main(spec_path):
                 a = np.zeros(int(sr * sc.get("dur", 4.0)), np.float32)
             else:
                 a, sr = tts.create(sc["text"], voice=voice, speed=speed, lang="en-us")
-            a = np.concatenate([a, np.zeros(int(sr * PAUSE), np.float32)])
+            a = np.concatenate([a, np.zeros(int(sr * getattr(mod, "PAUSE", PAUSE)), np.float32)])
             audio.append(a)
             dur = len(a) / sr
             scenes.append({"start": round(t0, 3), "dur": round(dur, 3)})

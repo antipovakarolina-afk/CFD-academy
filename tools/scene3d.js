@@ -240,3 +240,84 @@ Object.assign(Models, {
     return g;
   },
 });
+
+// ---------- детский 3D (глянец, как в мультиках) ----------
+const GLOSS = (c, o = {}) => new THREE.MeshPhysicalMaterial(Object.assign({color: c, roughness: 0.28, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.15}, o));
+function glow(color, r = 1, op = 0.25) { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 16), new THREE.MeshBasicMaterial({color, transparent: true, opacity: op, depthWrite: false})); m.castShadow = false; return m; }
+function cuteEyes(g, x, y, z, s = 1, iris = '#3fa9f5') {
+  [-1, 1].forEach(sd => {
+    const w = mesh(new THREE.SphereGeometry(0.15 * s, 24, 16), GLOSS('#ffffff')); w.scale.set(0.85, 1.1, 0.55); w.position.set(x + sd * 0.19 * s, y, z); g.add(w);
+    const ir = mesh(new THREE.SphereGeometry(0.09 * s, 20, 14), GLOSS(iris)); ir.scale.set(1, 1.1, 0.5); ir.position.set(x + sd * 0.19 * s, y - 0.01 * s, z + 0.07 * s); g.add(ir);
+    const p = mesh(new THREE.SphereGeometry(0.05 * s, 16, 12), GLOSS('#111')); p.scale.z = 0.5; p.position.set(x + sd * 0.19 * s, y - 0.01 * s, z + 0.1 * s); g.add(p);
+    const h = mesh(new THREE.SphereGeometry(0.025 * s, 10, 8), new THREE.MeshBasicMaterial({color: '#fff'})); h.position.set(x + sd * 0.19 * s + 0.03 * s, y + 0.04 * s, z + 0.12 * s); g.add(h);
+  });
+}
+Object.assign(Models, {
+  glossyStar(color = '#ffd43b') {
+    const s = new THREE.Shape();
+    for (let i = 0; i < 10; i++) { const r = i % 2 ? 0.27 : 0.62, a = i * Math.PI / 5; const x = r * Math.sin(a), y = r * Math.cos(a); i ? s.lineTo(x, y) : s.moveTo(x, y); }
+    const geo = new THREE.ExtrudeGeometry(s, {depth: 0.14, bevelEnabled: true, bevelSize: 0.12, bevelThickness: 0.14, bevelSegments: 8, curveSegments: 12}); geo.center();
+    const g = new THREE.Group();
+    g.add(mesh(geo, GLOSS(color, {emissive: '#ffb703', emissiveIntensity: 0.35})));
+    g.add(glow('#ffe066', 0.78, 0.07));
+    cuteEyes(g, 0, 0.06, 0.22, 0.9);
+    const sm = mesh(new THREE.TorusGeometry(0.1, 0.022, 8, 20, Math.PI), GLOSS('#7a3b00')); sm.rotation.z = Math.PI; sm.position.set(0, -0.13, 0.27); g.add(sm);
+    [-0.3, 0.3].forEach(x => { const c = mesh(new THREE.SphereGeometry(0.06, 12, 10), new THREE.MeshBasicMaterial({color: '#ff8fab', transparent: true, opacity: .6})); c.scale.z = .3; c.position.set(x, -0.08, 0.25); g.add(c); });
+    return g;
+  },
+  bear(color = '#c68b59') {
+    const g = new THREE.Group(), fur = GLOSS(color, {roughness: .6, clearcoat: .3}), light = GLOSS('#f1d3b3', {roughness: .6, clearcoat: .3});
+    const body = mesh(new THREE.SphereGeometry(0.45, 32, 24), fur); body.scale.set(1, 1.1, 0.9); body.position.y = 0.45; g.add(body);
+    const belly = mesh(new THREE.SphereGeometry(0.3, 24, 16), light); belly.scale.set(1, 1.1, 0.5); belly.position.set(0, 0.42, 0.3); g.add(belly);
+    const head = mesh(new THREE.SphereGeometry(0.42, 32, 24), fur); head.position.y = 1.15; g.add(head);
+    [-1, 1].forEach(sd => { const e = mesh(new THREE.SphereGeometry(0.15, 20, 16), fur); e.position.set(sd * 0.33, 1.48, -0.02); g.add(e);
+      const ei = mesh(new THREE.SphereGeometry(0.08, 16, 12), light); ei.position.set(sd * 0.33, 1.48, 0.08); g.add(ei);
+      const arm = mesh(new THREE.SphereGeometry(0.15, 16, 12), fur); arm.scale.set(1, 1.6, 1); arm.position.set(sd * 0.45, 0.55, 0.15); arm.rotation.z = sd * 0.5; g.add(arm);
+      const leg = mesh(new THREE.SphereGeometry(0.17, 16, 12), fur); leg.scale.set(1, 0.8, 1.3); leg.position.set(sd * 0.22, 0.08, 0.2); g.add(leg); });
+    const muzzle = mesh(new THREE.SphereGeometry(0.17, 20, 16), light); muzzle.scale.set(1.2, 0.85, 0.8); muzzle.position.set(0, 1.04, 0.36); g.add(muzzle);
+    const nose = mesh(new THREE.SphereGeometry(0.06, 14, 10), GLOSS('#3b2416')); nose.scale.set(1.3, 0.9, 0.8); nose.position.set(0, 1.1, 0.5); g.add(nose);
+    cuteEyes(g, 0, 1.24, 0.33, 0.75, '#6b3e1f');
+    return g;
+  },
+  room(night = true) {
+    const g = new THREE.Group(); g.userData.noPop = true;
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(14, 12), M('#5b4bb0', {roughness: .9})); wall.position.set(0, 2, -3); wall.receiveShadow = true; g.add(wall);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), M('#7a68cf', {roughness: .9})); floor.rotation.x = -Math.PI / 2; floor.position.set(0, -1.7, 0); floor.receiveShadow = true; g.add(floor);
+    const rug = mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.04, 40), M('#ff9ecd')); rug.position.set(0.3, -1.68, 0.4); g.add(rug);
+    const win = mesh(rbox(1.8, 2.0, 0.15, 0.2), GLOSS('#f5e6ff')); win.position.set(-1.3, 2.3, -2.9); g.add(win);
+    const pane = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.7), new THREE.MeshBasicMaterial({color: '#1d2a6b'})); pane.position.set(-1.3, 2.3, -2.8); g.add(pane);
+    const mn = Models.moon('#fff1a8'); mn.scale.setScalar(0.45); mn.position.set(-1.1, 2.5, -2.75); g.add(mn);
+    const bed = new THREE.Group();
+    const frame = mesh(rbox(2.6, 0.5, 1.4, 0.12), GLOSS('#c77dff')); frame.position.y = -1.3; bed.add(frame);
+    const head = mesh(rbox(0.25, 1.4, 1.4, 0.12), GLOSS('#b15cff')); head.position.set(-1.3, -0.95, 0); bed.add(head);
+    const blanket = mesh(rbox(1.9, 0.25, 1.45, 0.12), GLOSS('#ffd6ec')); blanket.position.set(0.3, -0.95, 0); bed.add(blanket);
+    const pillow = mesh(rbox(0.6, 0.25, 0.9, 0.12), GLOSS('#ffffff')); pillow.position.set(-0.9, -0.9, 0); bed.add(pillow);
+    bed.position.set(1.4, 0, -1.6); g.add(bed);
+    const lamp = new THREE.PointLight('#ffd27a', 1.4, 10); lamp.position.set(0, 1.5, 2.5); g.add(lamp);
+    return g;
+  },
+  sparkles(n = 25, seed = 5, spread = 3.4, color = '#fff3b0') {
+    const g = new THREE.Group(), r = rng(seed); g.userData.noPop = true;
+    for (let i = 0; i < n; i++) {
+      const st = Models.star(color, 1.2); st.scale.setScalar(0.08 + r() * 0.12);
+      st.position.set((r() - .5) * spread * 1.2, (r() - .35) * spread * 1.3, (r() - .5) * 1.5);
+      st.userData.float = {x: st.position.x, y: st.position.y, p: r() * 6.28, a: 0.06 + r() * 0.1}; g.add(st);
+    }
+    return g;
+  },
+  earth3d() {
+    const g = new THREE.Group(), r = rng(9);
+    g.add(mesh(new THREE.SphereGeometry(1, 48, 32), GLOSS('#3fa9f5')));
+    for (let i = 0; i < 9; i++) { const th = r() * 6.28, ph = 0.5 + r() * 2.1; const c = mesh(new THREE.SphereGeometry(0.28 + r() * 0.2, 16, 12), GLOSS('#5fd068'));
+      c.scale.set(1, 0.6, 0.35); c.position.set(Math.sin(ph) * Math.cos(th) * 0.93, Math.cos(ph) * 0.93, Math.sin(ph) * Math.sin(th) * 0.93); c.lookAt(0, 0, 0); g.add(c); }
+    g.add(glow('#8fd3ff', 1.08, 0.08)); g.userData.spinY = 0.5;
+    return g;
+  },
+  crystal() {
+    const g = new THREE.Group();
+    const geo = new THREE.OctahedronGeometry(0.8, 0); geo.scale(1, 1.25, 1);
+    g.add(mesh(geo, new THREE.MeshPhysicalMaterial({color: '#b8ecff', roughness: 0.05, metalness: 0.1, clearcoat: 1, flatShading: true, emissive: '#5ac8fa', emissiveIntensity: 0.25})));
+    g.add(glow('#bdf0ff', 1.05, 0.07));
+    return g;
+  },
+});
