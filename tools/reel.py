@@ -35,7 +35,7 @@ PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Cap;src:url(data:font/woff2;base64,%(cap_font)s)}
 html,body{margin:0;width:%(w)dpx;height:%(h)dpx;background:%(bg)s;overflow:hidden}
 #cap{position:absolute;top:300px;left:90px;right:90px;text-align:center;font:44px/1.25 Cap,serif;color:#111}
-svg{position:absolute;left:40px;top:480px;width:1000px;height:1000px}
+svg{position:absolute;left:40px;top:480px;width:1000px;height:1000px;overflow:visible}
 .hand{font-family:Hand,cursive;fill:#111}
 .red{fill:#d7263d}.blue{fill:#2f6fdb}.green{fill:#1f9d55}.purple{fill:#7b3fe4}.orange{fill:#f08a00}.pink{fill:#e0457b}
 .ln{fill:none;stroke:#111;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
@@ -44,7 +44,7 @@ svg{position:absolute;left:40px;top:480px;width:1000px;height:1000px}
 .hand.blue{fill:#2f6fdb}.hand.green{fill:#1f9d55}.hand.purple{fill:#7b3fe4}.hand.orange{fill:#f08a00}.hand.pink{fill:#e0457b}.dark .hand.blue{fill:#7fb0ff}.dark .hand.pink{fill:#ff7fae}.dark .hand.purple{fill:#b79bff}.dark .hand.orange{fill:#ffaa33}
 </style></head><body class="%(mode)s"><div id="cap"></div>
 <svg viewBox="0 0 1000 1000"><defs><filter id="wob"><feTurbulence id="turb" type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="1"/>
-<feDisplacementMap in="SourceGraphic" scale="9"/></filter></defs><g id="art" filter="url(#wob)">%(svg)s</g></svg>
+<feDisplacementMap in="SourceGraphic" scale="%(wob)s"/></filter></defs><g id="art" filter="url(#wob)">%(svg)s</g></svg>
 <script>
 const SHAPES = ['path','rect','circle','ellipse','line','polyline','polygon'];
 function motion(win, dur) {
@@ -60,20 +60,21 @@ function motion(win, dur) {
   });
   // 2) заданные движения: <g class="mv" data-kind=...>
   document.querySelectorAll('#art .mv').forEach(e => {
-    const k = e.dataset.kind, a = +e.dataset.a, per = +e.dataset.p * 1000, d = (e.dataset.d === '' ? win : +e.dataset.d) * 1000;
+    const k = e.dataset.kind, a = +e.dataset.a, rev = +e.dataset.p < 0, per = Math.abs(+e.dataset.p) * 1000, d = (e.dataset.d === '' ? win : +e.dataset.d) * 1000;
     const x = +e.dataset.x, y = +e.dataset.y;
     e.style.transformBox = 'fill-box'; e.style.transformOrigin = k === 'grow' ? 'bottom' : 'center';
     const loop = {duration: per, delay: d, iterations: Infinity, fill: 'both'};
     if (k === 'bob') e.animate([{transform: 'translateY(0px)'}, {transform: `translateY(${-a}px)`}], {...loop, direction: 'alternate', easing: 'ease-in-out'});
     if (k === 'wiggle') e.animate([{transform: `rotate(${-a}deg)`}, {transform: `rotate(${a}deg)`}], {...loop, direction: 'alternate', easing: 'ease-in-out'});
     if (k === 'pulse') e.animate([{transform: 'scale(1)'}, {transform: `scale(${1 + a})`}], {...loop, direction: 'alternate', easing: 'ease-in-out'});
-    if (k === 'spin') e.animate([{transform: 'rotate(0deg)'}, {transform: 'rotate(360deg)'}], {...loop, easing: 'linear'});
+    if (k === 'spin') e.animate([{transform: 'rotate(0deg)'}, {transform: `rotate(${rev ? -360 : 360}deg)`}], {...loop, easing: 'linear'});
     if (k === 'move') e.animate([{transform: 'translate(0px,0px)'}, {transform: `translate(${x}px,${y}px)`}],
       {duration: Math.max(300, dur * 1000 - d), delay: d, fill: 'both', easing: 'ease-in-out'});
     if (k === 'travel') e.animate([{transform: 'translate(0px,0px)', opacity: 0}, {opacity: 1, offset: .1}, {opacity: 1, offset: .85},
       {transform: `translate(${x}px,${y}px)`, opacity: 0}], {...loop, easing: 'linear'});
     if (k === 'rise') e.animate([{transform: 'translate(0px,0px)', opacity: 0}, {opacity: 1, offset: .2}, {transform: `translate(${x}px,${-a}px)`, opacity: 0}], {...loop, easing: 'ease-out'});
     if (k === 'grow') e.animate([{transform: 'scaleY(0)'}, {transform: 'scaleY(1.06)', offset: .8}, {transform: 'scaleY(1)'}], {duration: 900, delay: d, fill: 'both', easing: 'ease-out'});
+    if (k === 'flash') e.animate([{opacity: 0}, {opacity: a, offset: .04}, {opacity: 0, offset: .1}, {opacity: a * .7, offset: .14}, {opacity: 0, offset: .22}, {opacity: 0}], {...loop, easing: 'linear'});
     if (k === 'appear') e.animate([{opacity: 0, transform: 'scale(.2)'}, {opacity: 1, transform: 'scale(1.2)', offset: .7}, {opacity: 1, transform: 'scale(1)'}], {duration: 450, delay: d, fill: 'both'});
   });
 }
@@ -102,7 +103,8 @@ function setup(win) {
       if (getComputedStyle(e).fill !== 'none')
         e.animate([{fillOpacity: 0}, {fillOpacity: 1}], {...opt, delay: (start + d * 0.6) * 1000});
     } else {
-      e.animate([{opacity: 0}, {opacity: 1}], opt);
+      const op = getComputedStyle(e).opacity;            // сохраняем собственную прозрачность элемента
+      e.animate([{opacity: 0}, {opacity: op}], opt);
     }
   });
 }
@@ -185,7 +187,7 @@ def main(spec_path: str) -> None:
             def cap_at(t):
                 return int(min(np.searchsorted(bounds, t, side="right"), len(parts) - 1))
 
-            page.set_content(PAGE % dict(hand=FONTS[0], cap_font=FONTS[1], w=W, h=H, svg=sc["svg"], bg=sc.get("bg", "#fff"), mode=mode(sc.get("bg", "#fff"))))
+            page.set_content(PAGE % dict(hand=FONTS[0], cap_font=FONTS[1], w=W, h=H, svg=sc["svg"], bg=sc.get("bg", "#fff"), mode=mode(sc.get("bg", "#fff")), wob=getattr(mod, "WOBBLE", 9)))
             page.evaluate("document.fonts.ready")
             intro = min(getattr(mod, "INTRO", INTRO), dur * 0.6)
             if getattr(mod, "MOTION_FPS", 12):
