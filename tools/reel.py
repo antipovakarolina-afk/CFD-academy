@@ -80,6 +80,9 @@ function frame(t, cap, seed) {
   document.getAnimations().forEach(a => { a.currentTime = t * 1000; });
   document.getElementById('cap').innerHTML = cap;
   document.getElementById('turb').setAttribute('seed', seed);
+  const a = window.SHAKE || 0, sv = document.querySelector('svg');   // тряска камеры для погонь
+  if (a) { const rx = Math.sin(seed * 12.9898) * 43758.5453 %% 1, ry = Math.sin(seed * 78.233) * 12345.678 %% 1;
+    sv.style.transform = `translate(${rx * a}px, ${ry * a}px) rotate(${rx * a * 0.08}deg)`; }
 }
 </script></body></html>"""
 
@@ -139,7 +142,7 @@ def main(spec_path: str) -> None:
                 v = sc.get("voice", voice)                  # у сцены может быть свой голос (диалоги)
                 a, sr = tts.create(sc["text"], voice=v, speed=sc.get("speed", speed),
                                    lang="en-gb" if v.startswith("b") else "en-us")
-            a = np.concatenate([a, np.zeros(int(sr * PAUSE), np.float32)])
+            a = np.concatenate([a, np.zeros(int(sr * getattr(mod, "PAUSE", PAUSE)), np.float32)])
             audio.append(a)
             dur = len(a) / sr
             scenes.append({"start": round(t0, 3), "dur": round(dur, 3)})
@@ -154,8 +157,9 @@ def main(spec_path: str) -> None:
 
             page.set_content(PAGE % dict(hand=FONTS[0], cap_font=FONTS[1], w=W, h=H, svg=sc["svg"], bg=sc.get("bg", "#fff"), mode=mode(sc.get("bg", "#fff"))))
             page.evaluate("document.fonts.ready")
-            intro = min(INTRO, dur * 0.6)
+            intro = min(getattr(mod, "INTRO", INTRO), dur * 0.6)
             page.evaluate(f"setup({intro})")
+            page.evaluate(f"window.SHAKE = {sc.get('shake', 0)}")
 
             shots = {}
 
@@ -175,9 +179,9 @@ def main(spec_path: str) -> None:
                 t += step
             k = 0
             while t < dur - 1e-6:                              # «дыхание» линий + смена субтитров
-                d = min(BOIL, dur - t)
+                d = min(getattr(mod, "BOIL", BOIL), dur - t)
                 c = cap_at(t)
-                seed = 1 + k % 3
+                seed = 1 + k % (6 if sc.get('shake') else 3)
                 frames.append((shot(100.0, c, seed, key=(c, seed)), d))
                 t += d
                 k += 1

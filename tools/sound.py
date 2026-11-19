@@ -112,7 +112,8 @@ def main(spec):
     # музыка: арпеджио калимбы, по 4 удара на аккорд (или тёмный синт-фон)
     if dark:
         music = dark_music(total)[:n] * 10 ** (-8 / 20)
-    beat = 60 / BPM
+    m_bpm = re.search(r'^BPM\s*=\s*(\d+)', spec.read_text(), re.M)   # темп музыки из сценария
+    beat = 60 / (int(m_bpm.group(1)) if m_bpm else BPM)
     cache = {}
     k = 0
     t = 0.0
