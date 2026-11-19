@@ -795,3 +795,49 @@ def paper_roll(x, y, s=1.0, color="#e63946", dots="#ffd23f"):
 
 def heart(x, y, s=1.0, color="#e0457b"):
     return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M0 80 C-160 -20 -110 -150 0 -80 C110 -150 160 -20 0 80z"/>')
+
+
+# ---------- мозг и навыки ----------
+def neuron(x, y, s=1.0, myelin=0, color="#ff9fb3", sheath="#ffd23f"):
+    """нейрон: тело с дендритами и длинный аксон; myelin — сколько сегментов оболочки (0..6)"""
+    import math
+    den = "".join(f'<path class="ln" style="stroke-width:7" d="M{-300 + 60 * math.cos(a):.0f} {60 * math.sin(a):.0f} '
+                  f'q{70 * math.cos(a + .4):.0f} {70 * math.sin(a + .4):.0f} {130 * math.cos(a):.0f} {130 * math.sin(a):.0f}"/>'
+                  for a in [math.pi * (0.55 + k * 0.18) for k in range(6)])
+    seg = "".join(f'<rect class="ln" x="{-210 + k * 75}" y="-26" width="62" height="52" rx="24" style="fill:{sheath};stroke-width:5"/>'
+                  for k in range(int(myelin)))
+    return g(x, y, s, den + '<path class="ln" style="stroke-width:9" d="M-240 0 H250"/>' + seg
+             + f'<circle class="ln" cx="-300" cy="0" r="70" style="fill:{color}"/><circle cx="-300" cy="0" r="22" style="fill:#d4567a"/>'
+             + '<path class="ln" style="stroke-width:7" d="M250 0 l50 -40 M250 0 l60 0 M250 0 l50 40"/>')
+
+
+def signal(x, y, s=1.0, color="#ffb347"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color};stroke:#f08a00" d="M0 -40 l25 35 l-12 0 l20 45 l-45 -50 l14 0z"/>')
+
+
+def dirt_path(x, y, s=1.0):
+    import random
+    r = random.Random(1)
+    grass = "".join(f'<path class="ln" style="stroke:#3fa35a;stroke-width:5" d="M{r.uniform(-380, 380):.0f} {r.uniform(-120, 120):.0f} l-8 -26 M{0} {0} l0 0"/>' for _ in range(40))
+    return g(x, y, s, '<rect class="ln" x="-400" y="-140" width="800" height="280" rx="30" style="fill:#7ed957"/>' + grass
+             + '<path class="ln" style="fill:#c9a27a;stroke-width:5" d="M-400 30 q200 -60 400 -10 q200 50 400 -20 v40 q-200 70 -400 20 q-200 -50 -400 10z"/>')
+
+
+def highway(x, y, s=1.0):
+    dashes = "".join(f'<rect x="{-380 + k * 110}" y="-6" width="60" height="12" style="fill:#ffd23f"/>' for k in range(8))
+    return g(x, y, s, '<rect class="ln" x="-400" y="-110" width="800" height="220" style="fill:#4a4a52"/>' + dashes
+             + '<path class="ln" style="stroke:#fff;stroke-width:8" d="M-400 -90 H400 M-400 90 H400"/>')
+
+
+def snail(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#c9e2a0" d="M-160 60 q-20 -50 40 -50 h170 q60 0 70 -60 l14 -40 l10 44 q10 90 -80 106z"/>'
+                      '<circle class="ln" cx="-20" cy="-40" r="90" style="fill:#d9a066"/>'
+                      '<path class="ln" style="stroke-width:6" d="M-20 -40 m-55 0 a55 55 0 1 1 55 55 a35 35 0 1 1 -35 -35 a18 18 0 1 1 18 18"/>'
+                      '<path class="ln" style="stroke-width:5" d="M110 -70 l-10 -50 M130 -70 l10 -50"/>'
+                      '<circle cx="98" cy="-124" r="9" style="fill:#111"/><circle cx="142" cy="-124" r="9" style="fill:#111"/>')
+
+
+def bar_pair(x, y, s=1.0, a_label="", b_label="", a_h=1.0, b_h=1.0, a_col="#7ed957", b_col="#c9ced6", a_n=7, b_n=1):
+    a = "".join(f'<rect class="ln" x="{-330 + k * 42}" y="{-200 * a_h}" width="34" height="{200 * a_h}" style="fill:{a_col};stroke-width:4"/>' for k in range(a_n))
+    b = "".join(f'<rect class="ln" x="{80 + k * 42}" y="{-200 * b_h}" width="{34 if b_n > 1 else 240}" height="{200 * b_h}" style="fill:{b_col};stroke-width:4"/>' for k in range(b_n))
+    return g(x, y, s, a + b + '<path class="ln" d="M-360 0 H360"/>') + hand(a_label, x - 180 * s, y + 80 * s, 70 * s, "hand green") + hand(b_label, x + 200 * s, y + 80 * s, 70 * s, "hand")
