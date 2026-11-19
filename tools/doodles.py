@@ -841,3 +841,11 @@ def bar_pair(x, y, s=1.0, a_label="", b_label="", a_h=1.0, b_h=1.0, a_col="#7ed9
     a = "".join(f'<rect class="ln" x="{-330 + k * 42}" y="{-200 * a_h}" width="34" height="{200 * a_h}" style="fill:{a_col};stroke-width:4"/>' for k in range(a_n))
     b = "".join(f'<rect class="ln" x="{80 + k * 42}" y="{-200 * b_h}" width="{34 if b_n > 1 else 240}" height="{200 * b_h}" style="fill:{b_col};stroke-width:4"/>' for k in range(b_n))
     return g(x, y, s, a + b + '<path class="ln" d="M-360 0 H360"/>') + hand(a_label, x - 180 * s, y + 80 * s, 70 * s, "hand green") + hand(b_label, x + 200 * s, y + 80 * s, 70 * s, "hand")
+
+
+# ---------- движение ----------
+def mv(svg, kind, a=10, p=1.6, d="", x=0, y=0):
+    """обёртка движения: bob / wiggle / pulse / spin / move / travel / rise / grow / appear.
+    a — размах (px, градусы или доля для pulse), p — период (с), d — задержка (с; пусто = после прорисовки),
+    x, y — смещение для move/travel/rise."""
+    return f'<g class="mv" data-kind="{kind}" data-a="{a}" data-p="{p}" data-d="{d}" data-x="{x}" data-y="{y}">{svg}</g>'

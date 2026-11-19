@@ -47,6 +47,36 @@ svg{position:absolute;left:40px;top:480px;width:1000px;height:1000px}
 <feDisplacementMap in="SourceGraphic" scale="9"/></filter></defs><g id="art" filter="url(#wob)">%(svg)s</g></svg>
 <script>
 const SHAPES = ['path','rect','circle','ellipse','line','polyline','polygon'];
+function motion(win, dur) {
+  const art = document.getElementById('art');
+  // 1) всё в кадре слегка «дышит»: каждый верхний элемент покачивается в своём ритме
+  [...art.children].forEach((c, i) => {
+    if (c.classList.contains('still')) return;
+    const w = document.createElementNS('http://www.w3.org/2000/svg', 'g'); w.setAttribute('class', 'idle');
+    art.insertBefore(w, c); w.appendChild(c);
+    const a = 5 + (i %% 3) * 2, per = 1700 + (i * 370) %% 1300;
+    w.animate([{transform: 'translate(0px,0px) rotate(0deg)'}, {transform: `translate(0px,${-a}px) rotate(${(i %% 2 ? 1 : -1) * 0.8}deg)`}],
+      {duration: per, delay: win * 1000, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', fill: 'both'});
+  });
+  // 2) заданные движения: <g class="mv" data-kind=...>
+  document.querySelectorAll('#art .mv').forEach(e => {
+    const k = e.dataset.kind, a = +e.dataset.a, per = +e.dataset.p * 1000, d = (e.dataset.d === '' ? win : +e.dataset.d) * 1000;
+    const x = +e.dataset.x, y = +e.dataset.y;
+    e.style.transformBox = 'fill-box'; e.style.transformOrigin = k === 'grow' ? 'bottom' : 'center';
+    const loop = {duration: per, delay: d, iterations: Infinity, fill: 'both'};
+    if (k === 'bob') e.animate([{transform: 'translateY(0px)'}, {transform: `translateY(${-a}px)`}], {...loop, direction: 'alternate', easing: 'ease-in-out'});
+    if (k === 'wiggle') e.animate([{transform: `rotate(${-a}deg)`}, {transform: `rotate(${a}deg)`}], {...loop, direction: 'alternate', easing: 'ease-in-out'});
+    if (k === 'pulse') e.animate([{transform: 'scale(1)'}, {transform: `scale(${1 + a})`}], {...loop, direction: 'alternate', easing: 'ease-in-out'});
+    if (k === 'spin') e.animate([{transform: 'rotate(0deg)'}, {transform: 'rotate(360deg)'}], {...loop, easing: 'linear'});
+    if (k === 'move') e.animate([{transform: 'translate(0px,0px)'}, {transform: `translate(${x}px,${y}px)`}],
+      {duration: Math.max(300, dur * 1000 - d), delay: d, fill: 'both', easing: 'ease-in-out'});
+    if (k === 'travel') e.animate([{transform: 'translate(0px,0px)', opacity: 0}, {opacity: 1, offset: .1}, {opacity: 1, offset: .85},
+      {transform: `translate(${x}px,${y}px)`, opacity: 0}], {...loop, easing: 'linear'});
+    if (k === 'rise') e.animate([{transform: 'translate(0px,0px)', opacity: 0}, {opacity: 1, offset: .2}, {transform: `translate(${x}px,${-a}px)`, opacity: 0}], {...loop, easing: 'ease-out'});
+    if (k === 'grow') e.animate([{transform: 'scaleY(0)'}, {transform: 'scaleY(1.06)', offset: .8}, {transform: 'scaleY(1)'}], {duration: 900, delay: d, fill: 'both', easing: 'ease-out'});
+    if (k === 'appear') e.animate([{opacity: 0, transform: 'scale(.2)'}, {opacity: 1, transform: 'scale(1.2)', offset: .7}, {opacity: 1, transform: 'scale(1)'}], {duration: 450, delay: d, fill: 'both'});
+  });
+}
 function setup(win) {
   const art = document.getElementById('art');
   const items = [];
@@ -158,6 +188,8 @@ def main(spec_path: str) -> None:
             page.set_content(PAGE % dict(hand=FONTS[0], cap_font=FONTS[1], w=W, h=H, svg=sc["svg"], bg=sc.get("bg", "#fff"), mode=mode(sc.get("bg", "#fff"))))
             page.evaluate("document.fonts.ready")
             intro = min(getattr(mod, "INTRO", INTRO), dur * 0.6)
+            if getattr(mod, "MOTION_FPS", 12):
+                page.evaluate(f"motion({intro}, {dur})")
             page.evaluate(f"setup({intro})")
             page.evaluate(f"window.SHAKE = {sc.get('shake', 0)}")
 
@@ -178,6 +210,17 @@ def main(spec_path: str) -> None:
                 frames.append((shot(t, cap_at(t), 1), step))
                 t += step
             k = 0
+            mfps = getattr(mod, "MOTION_FPS", 12)
+            while mfps and t < dur - 1e-6:                     # движение: каждый кадр новый
+                d = min(1 / mfps, dur - t)
+                seed = 1 + int(t / getattr(mod, "BOIL", BOIL)) % (6 if sc.get('shake') else 3)
+                png = work / f"s{i:02}_{len(shots):03}.png"
+                page.evaluate("([t, c, s]) => frame(t, c, s)", [t, cap_html(parts[cap_at(t)]), seed])
+                page.screenshot(path=str(png))
+                shots[("m", k)] = png
+                frames.append((png, d))
+                t += d
+                k += 1
             while t < dur - 1e-6:                              # «дыхание» линий + смена субтитров
                 d = min(getattr(mod, "BOIL", BOIL), dur - t)
                 c = cap_at(t)
