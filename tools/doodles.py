@@ -849,3 +849,24 @@ def mv(svg, kind, a=10, p=1.6, d="", x=0, y=0):
     a — размах (px, градусы или доля для pulse), p — период (с), d — задержка (с; пусто = после прорисовки),
     x, y — смещение для move/travel/rise."""
     return f'<g class="mv" data-kind="{kind}" data-a="{a}" data-p="{p}" data-d="{d}" data-x="{x}" data-y="{y}">{svg}</g>'
+
+
+# ---------- детские песенки ----------
+def happy_star(x, y, s=1.0, color="#ffd23f"):
+    import math
+    pts = " ".join(f"{(150 if i % 2 == 0 else 62) * math.sin(i * math.pi / 5):.0f},{-(150 if i % 2 == 0 else 62) * math.cos(i * math.pi / 5):.0f}" for i in range(10))
+    return g(x, y, s, f'<polygon class="ln" points="{pts}" style="fill:{color}"/>'
+                      '<circle cx="-28" cy="-10" r="10" style="fill:#111"/><circle cx="28" cy="-10" r="10" style="fill:#111"/>'
+                      '<circle cx="-24" cy="-14" r="3.5" style="fill:#fff"/><circle cx="32" cy="-14" r="3.5" style="fill:#fff"/>'
+                      '<path class="ln" style="stroke-width:6" d="M-24 18 q24 22 48 0"/>'
+                      '<circle cx="-50" cy="14" r="11" style="fill:#ff9fb3;opacity:.6"/><circle cx="50" cy="14" r="11" style="fill:#ff9fb3;opacity:.6"/>')
+
+
+def diamond(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#bfe6ff" d="M-150 -40 L-80 -120 H80 L150 -40 L0 160 Z"/>'
+                      '<path class="ln" style="fill:#9fd6ff;stroke-width:5" d="M-150 -40 H150 M-80 -120 L-40 -40 L0 160 L40 -40 L80 -120 M-40 -40 L0 -120 L40 -40"/>'
+                      '<path style="fill:#fff;opacity:.8" d="M-100 -60 l20 -30 h30 l-25 30z"/>')
+
+
+def sparkle(x, y, s=1.0, color="#fff6c8"):
+    return g(x, y, s, f'<path style="fill:{color}" d="M0 -40 Q6 -6 40 0 Q6 6 0 40 Q-6 6 -40 0 Q-6 -6 0 -40z"/>')
