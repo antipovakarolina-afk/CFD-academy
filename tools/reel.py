@@ -136,7 +136,9 @@ def main(spec_path: str) -> None:
                 sr = 24000
                 a = np.zeros(int(sr * sc.get("dur", 4.0)), np.float32)
             else:
-                a, sr = tts.create(sc["text"], voice=voice, speed=speed, lang=lang)
+                v = sc.get("voice", voice)                  # у сцены может быть свой голос (диалоги)
+                a, sr = tts.create(sc["text"], voice=v, speed=sc.get("speed", speed),
+                                   lang="en-gb" if v.startswith("b") else "en-us")
             a = np.concatenate([a, np.zeros(int(sr * PAUSE), np.float32)])
             audio.append(a)
             dur = len(a) / sr
