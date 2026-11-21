@@ -870,3 +870,45 @@ def diamond(x, y, s=1.0):
 
 def sparkle(x, y, s=1.0, color="#fff6c8"):
     return g(x, y, s, f'<path style="fill:{color}" d="M0 -40 Q6 -6 40 0 Q6 6 0 40 Q-6 6 -40 0 Q-6 -6 0 -40z"/>')
+
+
+# ---------- запахи и ИИ ----------
+def nose(x, y, s=1.0, color="#ffcfb3", robot=False):
+    body = (f'<path class="ln" style="fill:{"#c9ced6" if robot else color}" d="M-20 -200 q-30 120 -110 220 q-40 60 20 80 q40 10 60 -20 '
+            'q50 40 100 0 q20 30 60 20 q60 -20 20 -80 q-80 -100 -110 -220 z"/>'
+            '<ellipse cx="-50" cy="80" rx="22" ry="14" style="fill:#5a3a3a"/><ellipse cx="50" cy="80" rx="22" ry="14" style="fill:#5a3a3a"/>')
+    if robot:
+        body += ('<path class="ln" style="stroke:#4fa3f7;stroke-width:5" d="M-10 -150 v80 h-40 v60 M10 -150 v60 h50 v50"/>'
+                 '<circle cx="-50" cy="-10" r="10" style="fill:#4fa3f7"/><circle cx="60" cy="-40" r="10" style="fill:#4fa3f7"/>'
+                 '<circle class="ln" cx="0" cy="-200" r="16" style="fill:#ffd23f"/>')
+    return g(x, y, s, body)
+
+
+def molecule(x, y, s=1.0):
+    atoms = [(0, 0, 40, "#e63946"), (-110, -60, 30, "#4fa3f7"), (110, -50, 32, "#2b2b30"), (-90, 90, 28, "#7ed957"), (100, 90, 30, "#ffd23f"), (0, -140, 26, "#b79bff")]
+    bonds = "".join(f'<path class="ln" style="stroke-width:9" d="M0 0 L{ax} {ay}"/>' for ax, ay, _, _ in atoms[1:])
+    return g(x, y, s, bonds + "".join(f'<circle class="ln" cx="{ax}" cy="{ay}" r="{r}" style="fill:{c}"/>' for ax, ay, r, c in atoms))
+
+
+def perfume(x, y, s=1.0, color="#ff8fc7"):
+    return g(x, y, s, f'<rect class="ln" x="-90" y="-60" width="180" height="200" rx="40" style="fill:{color};fill-opacity:.85"/>'
+                      '<rect class="ln" x="-30" y="-110" width="60" height="50" style="fill:#e8e8ee"/>'
+                      '<rect class="ln" x="-45" y="-160" width="90" height="50" rx="12" style="fill:#d4a537"/>'
+                      '<path style="fill:#fff;opacity:.5" d="M-60 -30 q10 -20 30 -20 v120 q-30 0 -30 -30z"/>')
+
+
+def sneaker(x, y, s=1.0, color="#4fa3f7"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M-200 60 v-60 q0 -40 40 -60 l60 -30 q30 40 70 40 l120 50 q90 20 110 60 v20z"/>'
+                      '<rect class="ln" x="-205" y="60" width="410" height="40" rx="18" style="fill:#fff"/>'
+                      '<path class="ln" style="stroke-width:5" d="M-110 -70 l40 20 M-90 -85 l40 20 M-70 -100 l40 20"/>')
+
+
+def magnifier(x, y, s=1.0):
+    return g(x, y, s, '<circle class="ln" cx="0" cy="0" r="90" style="fill:#cfe8ff;fill-opacity:.6;stroke-width:12"/>'
+                      '<path class="ln" style="stroke-width:26" d="M64 64 L170 170"/>')
+
+
+def paper(x, y, s=1.0, title="Science"):
+    lines = "".join(f'<path class="ln" style="stroke:#c9ced6;stroke-width:8" d="M-110 {-30 + k * 40} h{220 - (k % 2) * 60}"/>' for k in range(5))
+    return g(x, y, s, '<rect class="ln" x="-150" y="-200" width="300" height="400" style="fill:#fff"/>'
+                      f'<text class="hand" x="0" y="-110" font-size="70" text-anchor="middle" style="fill:#d7263d">{title}</text>' + lines)
