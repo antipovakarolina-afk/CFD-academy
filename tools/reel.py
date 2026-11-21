@@ -48,7 +48,18 @@ svg{position:absolute;left:40px;top:480px;width:1000px;height:1000px;overflow:vi
 <script>
 const SHAPES = ['path','rect','circle','ellipse','line','polyline','polygon'];
 function motion(win, dur) {
-  const art = document.getElementById('art');
+  const art0 = document.getElementById('art');
+  // 0) камера: резкий наезд в начале сцены + медленное приближение
+  const cam = document.createElementNS('http://www.w3.org/2000/svg', 'g'); cam.setAttribute('id', 'cam');
+  while (art0.firstChild) cam.appendChild(art0.firstChild);
+  art0.appendChild(cam);
+  if (window.CAM !== false) {
+    cam.style.transformBox = 'view-box'; cam.style.transformOrigin = '500px 500px';
+    const dz = window.CAM_ZOOM || 0.1, rot = (window.CAM_DIR || 1) * 2.5;
+    cam.animate([{transform: `scale(1.28) rotate(${-rot}deg)`}, {transform: 'scale(1) rotate(0deg)', offset: Math.min(0.12, 0.3 / dur)},
+                 {transform: `scale(${1 + dz}) rotate(${rot * 0.2}deg)`}], {duration: dur * 1000, fill: 'both', easing: 'ease-out'});
+  }
+  const art = cam;
   // 1) всё в кадре слегка «дышит»: каждый верхний элемент покачивается в своём ритме
   [...art.children].forEach((c, i) => {
     if (c.classList.contains('still')) return;
@@ -75,6 +86,16 @@ function motion(win, dur) {
     if (k === 'rise') e.animate([{transform: 'translate(0px,0px)', opacity: 0}, {opacity: 1, offset: .2}, {transform: `translate(${x}px,${-a}px)`, opacity: 0}], {...loop, easing: 'ease-out'});
     if (k === 'grow') e.animate([{transform: 'scaleY(0)'}, {transform: 'scaleY(1.06)', offset: .8}, {transform: 'scaleY(1)'}], {duration: 900, delay: d, fill: 'both', easing: 'ease-out'});
     if (k === 'flash') e.animate([{opacity: 0}, {opacity: a, offset: .04}, {opacity: 0, offset: .1}, {opacity: a * .7, offset: .14}, {opacity: 0, offset: .22}, {opacity: 0}], {...loop, easing: 'linear'});
+    if (k === 'bounce') e.animate([{transform: 'translateY(0px) scale(1.12,0.88)'}, {transform: `translateY(${-a}px) scale(0.92,1.1)`, offset: .45},
+      {transform: `translateY(${-a * 1.05}px) scale(1,1)`, offset: .55}, {transform: 'translateY(0px) scale(1.12,0.88)'}], {...loop, easing: 'ease-in-out'});
+    if (k === 'shake') e.animate([0, 1, 2, 3, 4, 5].map(j => ({transform: `translate(${Math.sin(j * 7.1) * a}px,${Math.cos(j * 4.3) * a}px) rotate(${Math.sin(j * 3.7) * a * .4}deg)`})), {...loop, easing: 'linear'});
+    if (k === 'fall') e.animate([{transform: 'translate(0px,0px) rotate(0deg)', opacity: 0}, {opacity: 1, offset: .1}, {transform: `translate(${x}px,${y}px) rotate(${a}deg)`, opacity: 1, offset: .9}, {opacity: 0, transform: `translate(${x}px,${y}px) rotate(${a}deg)`}], {...loop, easing: 'ease-in'});
+    if (k === 'orbit') { e.style.transformBox = 'view-box'; e.style.transformOrigin = `${x}px ${y}px`;
+      e.animate([{transform: 'rotate(0deg)'}, {transform: `rotate(${rev ? -360 : 360}deg)`}], {...loop, easing: 'linear'}); }
+    if (k === 'flyin') e.animate([{transform: `translate(${x}px,${y}px) rotate(${a}deg)`, opacity: 0}, {transform: 'translate(0px,0px) rotate(0deg)', opacity: 1, offset: .75},
+      {transform: 'translate(0px,0px) scale(1.06)', offset: .87}, {transform: 'translate(0px,0px) scale(1)'}], {duration: 700, delay: d, fill: 'both', easing: 'cubic-bezier(.2,.8,.2,1)'});
+    if (k === 'stamp') e.animate([{transform: 'scale(3) rotate(-20deg)', opacity: 0}, {transform: 'scale(0.9) rotate(-8deg)', opacity: 1, offset: .6},
+      {transform: 'scale(1) rotate(-10deg)'}], {duration: 380, delay: d, fill: 'both', easing: 'ease-in'});
     if (k === 'appear') e.animate([{opacity: 0, transform: 'scale(.2)'}, {opacity: 1, transform: 'scale(1.2)', offset: .7}, {opacity: 1, transform: 'scale(1)'}], {duration: 450, delay: d, fill: 'both'});
   });
 }
@@ -190,6 +211,7 @@ def main(spec_path: str) -> None:
             page.set_content(PAGE % dict(hand=FONTS[0], cap_font=FONTS[1], w=W, h=H, svg=sc["svg"], bg=sc.get("bg", "#fff"), mode=mode(sc.get("bg", "#fff")), wob=getattr(mod, "WOBBLE", 9)))
             page.evaluate("document.fonts.ready")
             intro = min(getattr(mod, "INTRO", INTRO), dur * 0.6)
+            page.evaluate(f"window.CAM = {'false' if sc.get('cam') is False else 'true'}; window.CAM_DIR = {1 if i % 2 else -1}")
             if getattr(mod, "MOTION_FPS", 12):
                 page.evaluate(f"motion({intro}, {dur})")
             page.evaluate(f"setup({intro})")

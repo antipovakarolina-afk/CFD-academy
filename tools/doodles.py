@@ -873,7 +873,7 @@ def sparkle(x, y, s=1.0, color="#fff6c8"):
 
 
 # ---------- запахи и ИИ ----------
-def nose(x, y, s=1.0, color="#ffcfb3", robot=False):
+def nose(x, y, s=1.0, color="#ffcfb3", robot=False, face=None):
     body = (f'<path class="ln" style="fill:{"#c9ced6" if robot else color}" d="M-20 -200 q-30 120 -110 220 q-40 60 20 80 q40 10 60 -20 '
             'q50 40 100 0 q20 30 60 20 q60 -20 20 -80 q-80 -100 -110 -220 z"/>'
             '<ellipse cx="-50" cy="80" rx="22" ry="14" style="fill:#5a3a3a"/><ellipse cx="50" cy="80" rx="22" ry="14" style="fill:#5a3a3a"/>')
@@ -881,6 +881,16 @@ def nose(x, y, s=1.0, color="#ffcfb3", robot=False):
         body += ('<path class="ln" style="stroke:#4fa3f7;stroke-width:5" d="M-10 -150 v80 h-40 v60 M10 -150 v60 h50 v50"/>'
                  '<circle cx="-50" cy="-10" r="10" style="fill:#4fa3f7"/><circle cx="60" cy="-40" r="10" style="fill:#4fa3f7"/>'
                  '<circle class="ln" cx="0" cy="-200" r="16" style="fill:#ffd23f"/>')
+    if face:
+        eyes = ('<ellipse cx="-34" cy="-70" rx="16" ry="20" style="fill:#fff" class="ln"/><ellipse cx="34" cy="-70" rx="16" ry="20" style="fill:#fff" class="ln"/>'
+                '<circle cx="-30" cy="-66" r="8" style="fill:#111"/><circle cx="38" cy="-66" r="8" style="fill:#111"/>')
+        if face == "happy":
+            eyes = '<path class="ln" style="stroke-width:6" d="M-50 -66 q16 -18 32 0 M18 -66 q16 -18 32 0"/>'
+        mouth = {"smile": '<path class="ln" style="stroke-width:6" d="M-30 130 q30 24 60 0"/>',
+                 "happy": '<path class="ln" style="fill:#e0457b;stroke-width:5" d="M-34 126 q34 40 68 0z"/>',
+                 "o": '<circle class="ln" cx="0" cy="136" r="14" style="fill:#7a2230"/>',
+                 "sad": '<path class="ln" style="stroke-width:6" d="M-28 140 q28 -20 56 0"/>'}[face if face in ("smile", "happy", "o", "sad") else "smile"]
+        body += eyes + mouth + '<circle cx="-70" cy="-20" r="14" style="fill:#ff9fb3;opacity:.6"/><circle cx="70" cy="-20" r="14" style="fill:#ff9fb3;opacity:.6"/>'
     return g(x, y, s, body)
 
 
@@ -912,3 +922,29 @@ def paper(x, y, s=1.0, title="Science"):
     lines = "".join(f'<path class="ln" style="stroke:#c9ced6;stroke-width:8" d="M-110 {-30 + k * 40} h{220 - (k % 2) * 60}"/>' for k in range(5))
     return g(x, y, s, '<rect class="ln" x="-150" y="-200" width="300" height="400" style="fill:#fff"/>'
                       f'<text class="hand" x="0" y="-110" font-size="70" text-anchor="middle" style="fill:#d7263d">{title}</text>' + lines)
+
+
+def flower(x, y, s=1.0, color="#ff8fc7"):
+    petals = "".join(f'<ellipse class="ln" cx="0" cy="-55" rx="30" ry="48" transform="rotate({k * 60})" style="fill:{color};stroke-width:5"/>' for k in range(6))
+    return g(x, y, s, '<path class="ln" style="stroke:#2e9d5b;stroke-width:10" d="M0 40 V200"/>' + petals + '<circle class="ln" cx="0" cy="0" r="32" style="fill:#ffd23f"/>')
+
+
+def mist(x, y, n=8, dx=260, color="#ffc6e5"):
+    return "".join(mv(f'<circle cx="{x}" cy="{y + (k % 3 - 1) * 14}" r="{10 + k % 4 * 5}" style="fill:{color}"/>', "travel", x=dx, y=(k % 5 - 2) * 40, p=0.9, d=round(k * 0.11, 2)) for k in range(n))
+
+
+def coin_rain(n=14, seed=2, top=-200, bottom=1100):
+    import random
+    r = random.Random(seed)
+    return "".join(mv(g(r.uniform(60, 940), top, 1, '<circle class="ln" r="30" style="fill:#ffd23f;stroke-width:5"/><text class="hand" y="14" font-size="40" text-anchor="middle">$</text>'),
+                      "fall", a=r.uniform(-360, 360), x=r.uniform(-60, 60), y=bottom - top, p=r.uniform(1.1, 1.8), d=round(r.uniform(0, 1.5), 2)) for _ in range(n))
+
+
+def thought(x, y, s=1.0, inner=""):
+    return g(x, y, s, '<ellipse class="ln" cx="0" cy="0" rx="190" ry="140" style="fill:#fff"/>'
+                      '<circle class="ln" cx="-150" cy="170" r="30" style="fill:#fff"/><circle class="ln" cx="-200" cy="230" r="16" style="fill:#fff"/>') + inner
+
+
+def apple(x, y, s=1.0):
+    return g(x, y, s, '<circle class="ln" cx="0" cy="0" r="40" style="fill:#e63946"/><path class="ln" style="stroke-width:6" d="M0 -40 v-18"/>'
+                      '<path class="ln" style="fill:#2e9d5b;stroke-width:4" d="M4 -50 q25 -15 34 5 q-20 8 -34 -5z"/>')
