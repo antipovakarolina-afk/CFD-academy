@@ -948,3 +948,60 @@ def thought(x, y, s=1.0, inner=""):
 def apple(x, y, s=1.0):
     return g(x, y, s, '<circle class="ln" cx="0" cy="0" r="40" style="fill:#e63946"/><path class="ln" style="stroke-width:6" d="M0 -40 v-18"/>'
                       '<path class="ln" style="fill:#2e9d5b;stroke-width:4" d="M4 -50 q25 -15 34 5 q-20 8 -34 -5z"/>')
+
+
+# ---------- эмоции и тело ----------
+def brain_face(x, y, s=1.0, mood="smile", color="#ff9fb3"):
+    eyes = {"smile": '<circle cx="-40" cy="-10" r="11" style="fill:#111"/><circle cx="40" cy="-10" r="11" style="fill:#111"/>'
+                     '<circle cx="-36" cy="-14" r="4" style="fill:#fff"/><circle cx="44" cy="-14" r="4" style="fill:#fff"/>',
+            "scared": '<circle class="ln" cx="-40" cy="-14" r="20" style="fill:#fff;stroke-width:5"/><circle class="ln" cx="40" cy="-14" r="20" style="fill:#fff;stroke-width:5"/>'
+                      '<circle cx="-40" cy="-14" r="7" style="fill:#111"/><circle cx="40" cy="-14" r="7" style="fill:#111"/>',
+            "calm": '<path class="ln" style="stroke-width:6" d="M-56 -8 q16 12 32 0 M24 -8 q16 12 32 0"/>'}[mood]
+    mouth = {"smile": '<path class="ln" style="stroke-width:6" d="M-24 36 q24 22 48 0"/>',
+             "scared": '<path class="ln" style="fill:#7a2230;stroke-width:5" d="M-26 50 q26 -30 52 0 q-26 14 -52 0z"/>',
+             "calm": '<path class="ln" style="stroke-width:6" d="M-20 40 q20 14 40 0"/>'}[mood]
+    sweat = ('<path class="ln" style="fill:#9cd2ff;stroke-width:4" d="M110 -70 q14 24 0 34 q-14 -10 0 -34z"/>' if mood == "scared" else "")
+    head = (f'<path class="ln" style="fill:{color}" d="M-150 40 q-40 -90 30 -130 q20 -70 100 -55 q70 -45 130 10 q80 0 70 90 q40 60 -20 110 q-40 50 -130 40 q-90 20 -140 -20 q-60 -10 -40 -45z"/>'
+            '<path class="ln" style="stroke-width:5" d="M-90 -110 q20 30 60 20 M10 -150 q-10 40 30 50 M90 -100 q-30 20 -10 50"/>')
+    return g(x, y, s, head + eyes + mouth + sweat +
+                                     '<circle cx="-75" cy="22" r="14" style="fill:#ff6f91;opacity:.5"/><circle cx="75" cy="22" r="14" style="fill:#ff6f91;opacity:.5"/>')
+
+
+def alarm_clock(x, y, s=1.0):
+    return g(x, y, s, '<circle class="ln" cx="-80" cy="-120" r="44" style="fill:#ffd23f"/><circle class="ln" cx="80" cy="-120" r="44" style="fill:#ffd23f"/>'
+                      '<circle class="ln" cx="0" cy="0" r="130" style="fill:#e63946"/><circle class="ln" cx="0" cy="0" r="100" style="fill:#fff"/>'
+                      '<path class="ln" style="stroke-width:9" d="M0 0 V-70 M0 0 L50 30"/>'
+                      '<path class="ln" style="stroke-width:8" d="M-80 130 l-30 40 M80 130 l30 40"/>')
+
+
+def lion(x, y, s=1.0):
+    mane = "".join(f'<ellipse class="ln" cx="0" cy="-125" rx="36" ry="60" transform="rotate({k * 30})" style="fill:#d9822b;stroke-width:5"/>' for k in range(12))
+    return g(x, y, s, mane + '<circle class="ln" cx="0" cy="0" r="110" style="fill:#f2b35b"/>'
+                      '<circle cx="-38" cy="-20" r="11" style="fill:#111"/><circle cx="38" cy="-20" r="11" style="fill:#111"/>'
+                      '<path class="ln" style="fill:#7a2230" d="M-40 40 q40 50 80 0 z"/><path class="ln" style="fill:#5a3a2a" d="M-20 10 h40 l-20 22z"/>'
+                      '<path class="ln" style="stroke-width:6" d="M-60 -60 l30 14 M60 -60 l-30 14"/>')
+
+
+def envelope(x, y, s=1.0, color="#fff"):
+    return g(x, y, s, f'<rect class="ln" x="-150" y="-100" width="300" height="200" rx="12" style="fill:{color}"/>'
+                      '<path class="ln" d="M-150 -100 L0 20 L150 -100"/>'
+                      '<circle class="ln" cx="150" cy="-100" r="40" style="fill:#e63946"/><text class="hand" x="150" y="-86" font-size="50" text-anchor="middle" style="fill:#fff">!</text>')
+
+
+def lungs(x, y, s=1.0, color="#ff9fb3"):
+    return g(x, y, s, '<path class="ln" style="stroke-width:12" d="M0 -200 V-40 M0 -40 q-40 10 -70 40 M0 -40 q40 10 70 40"/>'
+                      f'<path class="ln" style="fill:{color}" d="M-40 -120 q-150 -40 -160 140 q0 120 110 110 q60 -10 60 -100z"/>'
+                      f'<path class="ln" style="fill:{color}" d="M40 -120 q150 -40 160 140 q0 120 -110 110 q-60 -10 -60 -100z"/>')
+
+
+def stairs(x, y, s=1.0, n=5, color="#b79bff"):
+    return g(x, y, s, "".join(f'<rect class="ln" x="{-250 + k * 100}" y="{-k * 70}" width="100" height="{70 + k * 70}" style="fill:{color};stroke-width:5"/>' for k in range(n)))
+
+
+def sense_icon(kind, x, y, s=1.0):
+    icons = {"eye": '<path class="ln" style="fill:#fff" d="M-70 0 q70 -60 140 0 q-70 60 -140 0z"/><circle cx="0" cy="0" r="24" style="fill:#4fa3f7"/><circle cx="0" cy="0" r="10" style="fill:#111"/>',
+             "hand": '<path class="ln" style="fill:#ffcfb3" d="M-40 60 v-90 q0 -16 14 -16 q14 0 14 16 v50 v-80 q0 -16 14 -16 q14 0 14 16 v80 v-70 q0 -16 14 -16 q14 0 14 16 v90 q0 50 -50 50 h-20 q-30 0 -48 -30z"/>',
+             "ear": '<path class="ln" style="fill:#ffcfb3" d="M-30 60 q-40 -40 -30 -90 q20 -60 80 -40 q50 20 30 80 q-14 30 -40 30 q-14 0 -14 20 q0 30 -26 0z"/>',
+             "nose": '<path class="ln" style="fill:#ffcfb3" d="M-10 -70 q-20 60 -50 100 q-20 30 10 40 q20 6 30 -10 q24 20 50 0 q10 16 30 10 q30 -10 10 -40 q-30 -40 -50 -100z"/>',
+             "mouth": '<path class="ln" style="fill:#e58a90" d="M-70 0 q35 -36 70 -10 q35 -26 70 10 q-70 60 -140 0z"/>'}
+    return g(x, y, s, icons[kind])
