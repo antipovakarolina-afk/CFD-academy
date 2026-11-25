@@ -50,7 +50,7 @@ SCENES = [
              + mv(xtree(400, 520, 0.4), "bob", a=6, p=1.0) + mv(hand("just walk", 500, 940, 120, "hand orange", -3), "appear", d=1.5)),
     dict(bg=P["lilac"], text="And don't run from what scares you. Take tiny steps toward it. Each small step teaches your brain: I'm safe.",
          svg=stairs(560, 760, 1.0) + mv(person(330, 640, 0.55, "smile", "down"), "move", x=380, y=-280) + mv(star(900, 220, 1.0), "spin", p=3)
-             + mv(hand("tiny steps", 500, 180, 120, "hand purple", -4), "appear", d=1.0) + mv(hand("I'm safe", 800, 330, 90, "hand green", 6), "stamp", d=3.5)),
+             + mv(hand("tiny steps", 500, 180, 120, "hand purple", -4), "appear", d=1.0) + mv(hand("I'm safe", 300, 420, 100, "hand green", -6), "stamp", d=3.5)),
     dict(bg=P["mint"], text="Anxiety is an alarm, not a verdict. And if it starts getting in the way of your life, talk to a doctor. It's very treatable.",
          svg=mv(brain_face(500, 480, 1.1, "calm"), "bob", a=14, p=1.4) + mv(heart(250, 260, 0.6), "pulse", a=0.12, p=0.8) + mv(heart(780, 300, 0.5, "#b79bff"), "pulse", a=0.12, p=0.9)
              + mv(hand("you're not broken", 500, 860, 100, "hand purple", -3), "appear", d=1.5) + mv(hand("it's treatable", 500, 970, 90, "hand green", 2), "appear", d=4.0)),
