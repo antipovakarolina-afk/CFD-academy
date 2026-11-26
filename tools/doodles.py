@@ -1005,3 +1005,60 @@ def sense_icon(kind, x, y, s=1.0):
              "nose": '<path class="ln" style="fill:#ffcfb3" d="M-10 -70 q-20 60 -50 100 q-20 30 10 40 q20 6 30 -10 q24 20 50 0 q10 16 30 10 q30 -10 10 -40 q-30 -40 -50 -100z"/>',
              "mouth": '<path class="ln" style="fill:#e58a90" d="M-70 0 q35 -36 70 -10 q35 -26 70 10 q-70 60 -140 0z"/>'}
     return g(x, y, s, icons[kind])
+
+
+# ---------- Дублин ----------
+def spire(x, y, s=1.0, h=900, lit=False):
+    top = (f'<circle cx="0" cy="{-h}" r="40" style="fill:#fff6c8;opacity:.8"/>'
+           f'<circle cx="0" cy="{-h}" r="90" style="fill:#fff6c8;opacity:.25"/>' if lit else "")
+    return g(x, y, s, f'<path class="ln" style="fill:#d9dee6;stroke-width:5" d="M-24 0 L-2 {-h} L2 {-h} L24 0 Z"/>'
+                      f'<path style="fill:#fff;opacity:.6" d="M-10 0 L-1 {-h + 30} L2 {-h + 30} L-2 0z"/>'
+                      f'<rect class="ln" x="-60" y="0" width="120" height="30" style="fill:#9aa1ab;stroke-width:5"/>' + top)
+
+
+def pillar(x, y, s=1.0, broken=False):
+    col = ('<rect class="ln" x="-45" y="-380" width="90" height="380" style="fill:#c9c2b8"/>' if not broken else
+           '<path class="ln" style="fill:#c9c2b8" d="M-45 0 V-190 l20 -20 l15 15 l25 -25 l15 20 l15 -10 V0z"/>')
+    statue = ('' if broken else '<rect class="ln" x="-70" y="-410" width="140" height="30" style="fill:#b0a89c"/>'
+              '<circle class="ln" cx="0" cy="-470" r="22" style="fill:#8d929b"/><path class="ln" style="fill:#8d929b" d="M-25 -448 h50 l10 40 h-70z"/>'
+              '<path class="ln" style="fill:#2b2b30" d="M-24 -490 q24 -18 48 0 z"/>')
+    return g(x, y, s, '<rect class="ln" x="-110" y="0" width="220" height="70" style="fill:#b0a89c"/>' + col + statue)
+
+
+def boom(x, y, s=1.0):
+    import math
+    pts = " ".join(f"{(150 if k % 2 == 0 else 70) * math.cos(k * math.pi / 8):.0f},{(150 if k % 2 == 0 else 70) * math.sin(k * math.pi / 8):.0f}" for k in range(16))
+    return g(x, y, s, f'<polygon class="ln" points="{pts}" style="fill:#ffb347"/>'
+                      f'<polygon points="{" ".join(p for p in pts.split())}" transform="scale(.55)" style="fill:#ffe066"/>'
+                      '<text class="hand" x="0" y="22" font-size="70" text-anchor="middle" style="fill:#d7263d">BOOM</text>')
+
+
+def street(y=900, seed=3):
+    import random
+    r = random.Random(seed)
+    out, x = "", -40
+    cols = ["#e8c9a0", "#c9a7f5", "#9fd6c8", "#f2b8a0", "#cfd8e8"]
+    while x < 1040:
+        w, h = r.uniform(110, 170), r.uniform(220, 380)
+        out += f'<rect class="ln" x="{x:.0f}" y="{y - h:.0f}" width="{w:.0f}" height="{h:.0f}" style="fill:{r.choice(cols)};stroke-width:5"/>'
+        for wy in range(int(y - h + 30), int(y - 40), 60):
+            for wx in range(int(x + 18), int(x + w - 30), 40):
+                out += f'<rect class="ln" x="{wx}" y="{wy}" width="22" height="32" style="fill:#fff;stroke-width:3"/>'
+        x += w
+    return out + f'<rect class="ln" x="-40" y="{y}" width="1080" height="80" style="fill:#9aa1ab"/>'
+
+
+def bigben(x, y, s=1.0, h=640):
+    return g(x, y, s, f'<rect class="ln" x="-50" y="{-h}" width="100" height="{h}" style="fill:#d9b26b"/>'
+                      f'<circle class="ln" cx="0" cy="{-h + 120}" r="38" style="fill:#fff"/>'
+                      f'<path class="ln" style="fill:#4a6b4a" d="M-56 {-h} L0 {-h - 110} L56 {-h} Z"/>')
+
+
+def stiletto(x, y, s=1.0, color="#e63946"):
+    return g(x, y, s, f'<path class="ln" style="fill:{color}" d="M-160 40 q0 -50 40 -60 q80 -10 140 -80 q30 -30 60 0 l60 120 q-20 20 -40 20 z"/>'
+                      '<path class="ln" style="fill:#2b2b30" d="M120 40 l10 110 l14 0 l-4 -110z"/>')
+
+
+def liffey(y=880):
+    waves = "".join(f'<path class="ln" style="stroke:#fff;stroke-width:5" d="M{x} {y + 40} q30 -20 60 0 q30 20 60 0"/>' for x in range(-40, 1040, 160))
+    return f'<rect x="-40" y="{y}" width="1080" height="140" style="fill:#5b8fd6"/>' + waves
