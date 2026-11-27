@@ -1062,3 +1062,52 @@ def stiletto(x, y, s=1.0, color="#e63946"):
 def liffey(y=880):
     waves = "".join(f'<path class="ln" style="stroke:#fff;stroke-width:5" d="M{x} {y + 40} q30 -20 60 0 q30 20 60 0"/>' for x in range(-40, 1040, 160))
     return f'<rect x="-40" y="{y}" width="1080" height="140" style="fill:#5b8fd6"/>' + waves
+
+
+# ---------- история Ирландии ----------
+def potato(x, y, s=1.0, rotten=False):
+    col = "#7a6a4a" if rotten else "#c9a066"
+    spots = ('<circle cx="-30" cy="-10" r="16" style="fill:#3b2f1f"/><circle cx="25" cy="15" r="20" style="fill:#3b2f1f"/><circle cx="40" cy="-25" r="10" style="fill:#3b2f1f"/>'
+             if rotten else '<circle cx="-30" cy="-10" r="5" style="fill:#8a6a3a"/><circle cx="25" cy="15" r="5" style="fill:#8a6a3a"/><circle cx="40" cy="-25" r="4" style="fill:#8a6a3a"/>')
+    return g(x, y, s, f'<path class="ln" style="fill:{col}" d="M-90 0 q0 -60 70 -66 q90 -6 110 50 q14 60 -60 76 q-120 20 -120 -60z"/>' + spots)
+
+
+def crescent_star(x, y, s=1.0, color="#fff", stroke=True):
+    import math
+    st = " ".join(f"{70 + (34 if k % 2 == 0 else 14) * math.sin(k * math.pi / 5):.0f},{-(34 if k % 2 == 0 else 14) * math.cos(k * math.pi / 5):.0f}" for k in range(10))
+    ln = 'class="ln" ' if stroke else ""
+    return g(x, y, s, f'<path {ln}style="fill:{color};stroke-width:5" d="M30 -70 a75 75 0 1 0 0 140 a60 60 0 1 1 0 -140z"/>'
+                      f'<polygon {ln}points="{st}" style="fill:{color};stroke-width:4"/>')
+
+
+def shield(x, y, s=1.0, inner=""):
+    return g(x, y, s, '<path class="ln" style="fill:#2f6fdb" d="M-170 -200 H170 V20 Q170 170 0 230 Q-170 170 -170 20 Z"/>'
+                      '<path class="ln" style="fill:none;stroke:#ffd23f;stroke-width:8" d="M-150 -180 H150 V20 Q150 150 0 205 Q-150 150 -150 20 Z"/>') + inner
+
+
+def ship(x, y, s=1.0, flag=""):
+    return g(x, y, s, '<path class="ln" style="fill:#8a5a3b" d="M-200 0 H200 L150 90 H-150 Z"/>'
+                      '<path class="ln" style="stroke-width:10" d="M-40 0 V-260 M80 0 V-200"/>'
+                      '<path class="ln" style="fill:#fff6e0" d="M-40 -250 q110 60 0 220z M80 -190 q80 50 0 170z"/>'
+                      '<path class="ln" style="fill:#e63946" d="M-40 -260 l60 15 l-60 15z"/>') + flag
+
+
+def sea(y=820, color="#5b8fd6"):
+    waves = "".join(mv(f'<path class="ln" style="stroke:#fff;stroke-width:5" d="M{x} {y + 50} q30 -20 60 0 q30 20 60 0"/>', "bob", a=8, p=0.9, d=0.1 * (x % 5)) for x in range(-40, 1040, 160))
+    return f'<rect x="-40" y="{y}" width="1080" height="260" style="fill:{color}"/>' + waves
+
+
+def crown(x, y, s=1.0):
+    return g(x, y, s, '<path class="ln" style="fill:#ffd23f" d="M-110 40 L-120 -70 L-60 -10 L0 -90 L60 -10 L120 -70 L110 40 Z"/>'
+                      '<circle cx="0" cy="-20" r="12" style="fill:#e63946"/><circle cx="-70" cy="10" r="9" style="fill:#4fa3f7"/><circle cx="70" cy="10" r="9" style="fill:#4fa3f7"/>')
+
+
+def kindred_feathers(x, y, s=1.0):
+    import math
+    out = ""
+    for k in range(9):
+        a = -math.pi / 2 + (k - 4) * 0.16
+        fx = 150 * math.cos(a + math.pi / 2) * 0.0 + (k - 4) * 55
+        out += (f'<path class="ln" style="fill:#c9ced6" d="M{fx} 0 q-24 -220 0 -{380 + (4 - abs(k - 4)) * 30} q24 {200 + (4 - abs(k - 4)) * 30} 0 {380 + (4 - abs(k - 4)) * 30}z" '
+                f'transform="rotate({(k - 4) * 4} {fx} 0)"/>')
+    return g(x, y, s, out + '<rect class="ln" x="-280" y="0" width="560" height="30" style="fill:#9aa1ab"/>')
